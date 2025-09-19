@@ -1,0 +1,31 @@
+/* === STYLING ONLY SPECIFIC TO THIS PAGE === */
+
+#dashboardContainer
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#cards
+{
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2em;
+    padding-top: 20px;
+    padding-left: 150px;
+    padding-right: 150px;
+
+    /* Ensure it never exceeds screen width */
+    width: 100%;
+    max-height: 100%;
+    box-sizing: border-box;
+}
+
+.cardBtns
+{
+    padding: 30px;
+}

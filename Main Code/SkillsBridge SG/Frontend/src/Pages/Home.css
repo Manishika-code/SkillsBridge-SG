@@ -1,0 +1,12 @@
+/* === STYLING ONLY SPECIFIC TO THIS PAGE === */
+#homeContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#homeHeader
+{
+    text-align: center;
+}

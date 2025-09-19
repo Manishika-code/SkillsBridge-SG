@@ -1,0 +1,72 @@
+/* === STYLING ONLY SPECIFIC TO THIS COMPONENT === */
+
+#cardContainer
+{
+    display: flex;
+    width: 400px;
+    height: fit-content;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid #000000;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #333;
+
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+}
+
+#cardContainer:hover
+{
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    border: none;
+}
+
+.cardContent h1
+{
+    font-size: 32px;
+    margin: 0;
+}
+
+.cardContent h2, h3, h4
+{
+    font-size: 16px;
+    font-weight: lighter;
+    margin: 0;
+    margin-bottom: 5px;
+}
+
+.cardContent .sub-desc
+{
+    font-size: 12px;
+    margin: 0;
+    color: #828282;
+}
+
+.cardContent p
+{
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+.cardbottom
+{
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+    padding-top: 5px;
+}
+
+.cardbottom .courseType
+{
+    font-family: 'Georgia';
+    font-size: 15px;
+    border: 1px solid black;
+    padding: 3px 5px;
+}
+
+.cardbottom button
+{
+    padding: 15px;
+    font-size: 16px;
+}

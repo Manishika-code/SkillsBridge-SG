@@ -1,0 +1,9 @@
+/* === STYLING ONLY SPECIFIC TO THIS PAGE === */
+
+#categoryContainer
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
