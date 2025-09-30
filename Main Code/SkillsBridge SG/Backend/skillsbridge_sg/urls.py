@@ -17,9 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from skillsbridge_core.views import gov_data
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/gov_data/', gov_data, name='gov_data'),
 
      # Auth (JWT)
     path("api/token/", TokenObtainPairView.as_view()),

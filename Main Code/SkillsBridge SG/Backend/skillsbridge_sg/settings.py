@@ -11,9 +11,11 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_GOV_SG_API_KEY = config('DATA_GOV_SG_API_KEY', default=None)
 
 
 # Quick-start development settings - unsuitable for production

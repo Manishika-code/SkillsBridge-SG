@@ -1,9 +1,12 @@
 import '../Pages/Dashboard.css';
 import { Link } from "react-router-dom";
 import CourseCard from '../Components/CourseCard';
+import { useEffect, useState } from 'react';
 
 export default function Dashboard(){  
     {/* Define functionality / datasets */}
+
+
 
     const populateCourseCards = [
         { id: 1, qualific:"Diploma in", courseName:"Accountancy", institution:"Ngee Ann Polytechnic", schoolCtg:"School of Business & Accountancy", courseDesr:"Aims to equip students with essential business knowledge and specialised training in accountancy and financial management to pursue a career in the Accountancy Sector.", courseType:"Part-Time"},

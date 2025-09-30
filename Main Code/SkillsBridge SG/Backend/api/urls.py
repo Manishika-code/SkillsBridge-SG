@@ -20,5 +20,6 @@ urlpatterns = [
     # auth helpers
     path("auth/register/", register),
     path("auth/me/", me),
+    # path('', include('skillsbridge_sg.urls')),
 ]
 
