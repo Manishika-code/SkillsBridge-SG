@@ -1,0 +1,10 @@
+{
+  "venvPath": ".",
+  "venv": "venv",
+  "python.analysis.extraPaths": [
+    "./skillsbridge_sg",
+    "./skillsbridge_core",
+    "./ingest"
+  ]
+}
+

@@ -16,13 +16,18 @@ class Skill(models.Model):
 # what courses are there (poly, jc, etc)
 class Course(models.Model):
     LEVELS = [("poly","Polytechnic"),("jc","Junior College"),("uni","University")]
-    id       = models.CharField(primary_key=True, max_length=36, default=uid, editable=False)
-    level    = models.CharField(max_length=8, choices=LEVELS)
-    name     = models.CharField(max_length=255)
-    provider = models.CharField(max_length=64)
     skills   = models.ManyToManyField(Skill, through="CourseSkill")
+    institution = models.CharField(max_length=255, blank=True, null=True)
+    level = models.CharField(max_length=10, choices=LEVELS, default="poly")
+    school = models.CharField(max_length=255, blank=True, null=True)
 
-    def __str__(self): return f"{self.name} ({self.provider})"
+    course_name = models.CharField(max_length=255)
+    course_description = models.TextField(blank=True, null=True)
+    course_code = models.CharField(max_length=50, blank=True, null=True)     # SP dataset
+
+    url = models.URLField(blank=True, null=True)
+
+    def __str__(self): return f"{self.course_name} ({self.institution})"
 
 # courses in skillsfuture (not sure if we need this)
 class CourseSkill(models.Model):
@@ -76,3 +81,6 @@ class SavedPlanNode(models.Model):
 class Glossary(models.Model):
     key   = models.CharField(primary_key=True, max_length=128)
     value = models.TextField()
+
+
+
