@@ -4,7 +4,7 @@
 {
     display: flex;
     width: 400px;
-    height: fit-content;
+    max-height: 400px;
     align-items: center;
     padding: 20px;
     border: 1px solid #000000;
@@ -22,9 +22,14 @@
     border: none;
 }
 
+.cardContent 
+{
+    width: 100%;
+}
+
 .cardContent h1
 {
-    font-size: 32px;
+    font-size: 30px;
     margin: 0;
 }
 
@@ -41,6 +46,15 @@
     font-size: 12px;
     margin: 0;
     color: #828282;
+}
+
+.cardContent .desc
+{
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 10px;
 }
 
 .cardContent p
@@ -69,4 +83,5 @@
 {
     padding: 15px;
     font-size: 16px;
+    background-color: #666666;
 }

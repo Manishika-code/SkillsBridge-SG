@@ -9,9 +9,11 @@ const CourseCard = (course) => {
                 
                 <hr></hr>
 
-                <p className='sub-desc'>{course.institution} | {course.schoolCtg}</p>
+                <p className='sub-desc'>{course.institution} {course.schoolCtg && `| ${course.schoolCtg}`}</p>
 
-                <p>{course.courseDesr}</p>
+                <div className='desc'>
+                    <p>{course.courseDesr}</p>
+                </div>
 
                 <div className='cardbottom'> 
                     <div className='courseType'>{course.courseType}</div>

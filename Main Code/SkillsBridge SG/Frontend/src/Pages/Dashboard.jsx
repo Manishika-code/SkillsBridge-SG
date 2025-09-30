@@ -3,16 +3,36 @@ import { Link } from "react-router-dom";
 import CourseCard from '../Components/CourseCard';
 import { useEffect, useState } from 'react';
 
-// Computed in frontend, probably should compute in backend instead?
-function getQualific(level) {
-  switch(level) {
-    case "poly": return "Diploma";
-    case "uni": return "Degree";
-    case "jc": return "A-Level";
-    default: return "";
-  }
+import { FiArrowLeftCircle } from "react-icons/fi";
+import { FcInfo } from "react-icons/fc";
+import { FaBookBookmark } from "react-icons/fa6";
+
+// For institution display
+const getQualific = (level) => {
+    switch(level){
+        case "poly": return "Diploma in";
+        case "uni": return "Bachelor of";
+        default: return '';
+    }
 }
-export default function Dashboard(){  
+
+// For only course name display
+const cleanCourseName = (courseName) => {
+    if (!courseName) return '';
+
+    const prefixPoly = "Diploma in";
+    const prefixUni = "Bachelor of";
+    if (courseName.toLowerCase().startsWith(prefixPoly.toLowerCase())){
+        return courseName.substring(prefixPoly.length).trim();
+    }
+    if (courseName.toLowerCase().startsWith(prefixUni.toLowerCase())){
+        return courseName.substring(prefixUni.length).trim();
+    }
+    return courseName;
+}
+
+export default function Dashboard(){ 
+     
     {/* Define functionality / datasets */}
     const [courses, setCourses] = useState([]);
     useEffect(() => {
@@ -22,41 +42,51 @@ export default function Dashboard(){
       .catch((err) => console.error("Error fetching courses:", err));
   }, []);
 
-    
 
-
-/*
-   const populateCourseCards = [
-        { id: 1, qualific:"Diploma in", courseName:"Accountancy", institution:"Ngee Ann Polytechnic", schoolCtg:"School of Business & Accountancy", courseDesr:"Aims to equip students with essential business knowledge and specialised training in accountancy and financial management to pursue a career in the Accountancy Sector.", courseType:"Part-Time"},
-        { id: 2, qualific:"Degree in", courseName:"Sociology", institution:"National University of Singapore", schoolCtg:"Department of Sociology", courseDesr:"Aims to equip students with essential business knowledge and specialised training in arts and social politics.", courseType:"Full-Time"},
-        { id: 3, qualific:"Degree in", courseName:"Sociology", institution:"National University of Singapore", schoolCtg:"Department of Sociology", courseDesr:"Aims to equip students with essential business knowledge and specialised training in arts and social politics.", courseType:"Full-Time"},
-    ]
-*/
-    {/* Frontend */}
-    
+    {/* Frontend */}    
     return (
-        <div id='dashboardContainer'>
-            <div>
-                <h1>COURSES</h1>
-            </div>
-            
-            <div id='cards'>
-                {courses.map((course) => (
-                    <CourseCard 
-                    key={course.id}
-                    qualific={getQualific(course.level)}
-                    courseName={course.course_name}
-                    institution={course.institution}
-                    schoolCtg={course.school}
-                    courseDesr={course.course_description}
-                    courseType="Full-Time"
-                />
-                ))}
+        <div id="wholeDashboard">               
+            <div id='dashboardContainer'>                
+                <div id="topPanel">
+                    <div>
+                        <Link to="/"><div className='backBtn'><FiArrowLeftCircle size={40} /></div></Link> {/* To be changed: Direct to different pages for different user */}                
+                    </div>
+                    <div>
+                        <h1>COURSES</h1>
+                    </div>
+                </div>
+
+                <div id='cards'>
+                    {courses.map((course) => (
+                        <CourseCard 
+                        key={course.id}
+                        qualific={getQualific(course.level)}
+                        courseName={cleanCourseName(course.course_name)}
+                        institution={course.institution}
+                        schoolCtg={course.school}
+                        courseDesr={course.course_description}
+                        courseType="Full-Time"
+                    />
+                    ))}
+                </div>
+
+                <div className='compareBtn'>
+                    <Link to="/comparePage"><div className='compareIco'><FcInfo size={60}/></div></Link>
+                </div>
             </div>
 
-            <div className='cardBtns'>
-                <Link to="/"><button>Back</button></Link> {/* To be changed: Direct to different pages for different user */}
-                <Link to="/comparePage"><button>Compare</button></Link>
+            <div id="sideContainer">
+                <div id="beforeSelect">                   
+                    <div id='myBookmarks'>
+                        <button><FaBookBookmark /> Check Out My Bookmarks</button>
+                    </div>
+
+                    <div className='infoDisplay'>
+                        <h3>Select a course to find out more!</h3>
+                        <h3>---</h3>
+                        <h3>Click on <FcInfo size={40}/> to compare courses!</h3>
+                    </div>
+                </div>
             </div>
         </div>
     )
