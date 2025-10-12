@@ -12,7 +12,6 @@
     background-color: #fff;
     color: #333;
 
-    cursor: pointer;
     transition: 0.2s ease-in-out;
 }
 
@@ -27,6 +26,24 @@
     width: 100%;
 }
 
+.cardContent .selected
+{
+    opacity: 1;
+}
+
+.cardContent .unselected
+{
+    opacity: 0.4;
+}
+
+.cardContent .unselected .cardbottom button:hover
+{
+    cursor: not-allowed;
+    transition: none;
+    transform: none;
+    box-shadow: none;
+}
+
 .cardContent h1
 {
     font-size: 30px;
@@ -39,6 +56,19 @@
     font-weight: lighter;
     margin: 0;
     margin-bottom: 5px;
+}
+
+.cardContent .checkbox
+{
+    display: flex;
+    justify-content: end;
+}
+
+input[type="checkbox"]
+{
+    width: 20px; /* Desired width */
+    height: 20px; /* Desired height */
+    cursor: pointer;
 }
 
 .cardContent .sub-desc

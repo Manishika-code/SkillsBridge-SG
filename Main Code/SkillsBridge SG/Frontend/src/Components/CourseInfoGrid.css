@@ -1,0 +1,31 @@
+#gridContainer
+{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    border: 2px solid black;
+    border-radius: 10px;
+}
+
+#gridContainer h1, h2
+{
+    margin-block: 0;
+    margin: 10px;
+}
+
+#gridContainer h2
+{
+    font-weight: lighter;
+    font-size: 20px;
+    text-transform: uppercase;
+    text-decoration: underline;
+}
+
+#gridContainer h1
+{
+    font-size: 40px;
+    white-space: nowrap;
+}
