@@ -1,0 +1,56 @@
+/* Card container */
+.course-card {
+  display: flex;
+  flex-direction: column;
+  width: 440px;                  /* a little wider than before */
+  align-items: stretch;
+  padding: 24px;                 /* more padding */
+  border: 1px solid #000;
+  border-radius: 14px;
+  background-color: #fff;
+  color: #333;
+  text-align: left;
+  box-shadow: 0 6px 18px rgba(0,0,0,.06);
+}
+
+/* Sections */
+.section {
+  border: 1px solid #eee;
+  background: #fafafa;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 16px;              /* more vertical spacing between sections */
+}
+
+.kpis { gap: 12px; }
+
+/* Charts */
+.chart-wrap { margin-top: 12px; }
+.chart-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #111;
+  margin: 4px 0 8px;
+}
+
+/* Chips and bottom */
+.chips { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
+.chip { border:1px solid #ddd; border-radius:999px; padding:6px 10px; font-size:13px; background:#fff; }
+
+.cardbottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 14px;
+  margin-top: 8px;
+}
+
+.cardbottom .courseType {
+  border: 1px solid #111; border-radius: 999px; padding: 6px 12px; font-size: 14px;
+}
+
+.cardbottom button {
+  padding: 12px 16px; font-size: 15px; background:#111; color:#fff;
+  border:none; border-radius:12px; font-weight:700; cursor:pointer;
+}
+
