@@ -1,0 +1,35 @@
+.skillContainer {
+    width: 290px;
+    height: 120px;
+    padding: 18px;
+    background-color: #fff;
+    border-radius: 17px;
+    margin: 15px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 0 6px rgba(0,0,0,0.05);
+    cursor: pointer;
+    border: none;
+    transition: box-shadow 0.2s;
+}
+
+.skillContainer:hover {
+    box-shadow: 0 5px 22px rgba(80,80,80,0.18);
+}
+
+.skillContent {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.skillIcon {
+    font-size: 42px;
+    margin-right: 4px;
+}
+
+.skillTitle {
+    font-size: 1.35rem;
+    color: #181836;
+    font-weight: bold;
+}
