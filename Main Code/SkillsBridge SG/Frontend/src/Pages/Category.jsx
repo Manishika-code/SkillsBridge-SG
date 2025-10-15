@@ -5,7 +5,7 @@ import Skill from '../Components/Skill';
 const skillData = [
     { icon: "⌨️", skillName: "Coding" },
     { icon: "🎨", skillName: "Design" },
-    { icon: "🧪", skillName: "science" },
+    { icon: "🧪", skillName: "Science" },
     { icon: "➗", skillName: "Mathematics" },
     { icon: "✏️", skillName: "Graphic Design" },
     { icon: "✒️", skillName: "Creative Writing" },
@@ -30,10 +30,7 @@ export default function Category() {
                 <button className="degreeBtn activeDegree">Degree</button>
                 <button className="degreeBtn">Diploma</button>
             </div>
-            <div id="categoryPagination">
-                <button className="paginationBtn">{'<'}</button>
-                <button className="paginationBtn">{'>'}</button>
-            </div>
+                <Link to="/dashboardPage"><button>Confirm</button></Link>
         </div>
     );
 }
