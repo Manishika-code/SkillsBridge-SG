@@ -1,18 +1,39 @@
 import '../Pages/Category.css';
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
+import Skill from '../Components/Skill';
 
-export default function Category(){
+const skillData = [
+    { icon: "⌨️", skillName: "Coding" },
+    { icon: "🎨", skillName: "Design" },
+    { icon: "🧪", skillName: "science" },
+    { icon: "➗", skillName: "Mathematics" },
+    { icon: "✏️", skillName: "Graphic Design" },
+    { icon: "✒️", skillName: "Creative Writing" },
+    { icon: "🔊", skillName: "Public Speaking" },
+    { icon: "📈", skillName: "Economics" },
+    { icon: "⏻", skillName: "Electronics" }
+];
 
+export default function Category() {
     return (
-        <div id='categoryContainer'>
-            <div>
-                <h1>Select your skills</h1>
+        <div id="categoryPageWrapper">
+            <div id="categoryHeader">
+                <Link to="/"><span id="backArrow">←</span> BACK</Link>
             </div>
-
-            <div>
-                <Link to="/"><button>Back</button></Link>
-                <Link to="/dashboardPage"><button>Confirm</button></Link>
+            <h1 id="categoryTitle">What are your skills?</h1>
+            <div id="skillGrid">
+                {skillData.map((d, idx) =>
+                    <Skill key={d.skillName} icon={d.icon} skillName={d.skillName} />
+                )}
+            </div>
+            <div id="degreeSelector">
+                <button className="degreeBtn activeDegree">Degree</button>
+                <button className="degreeBtn">Diploma</button>
+            </div>
+            <div id="categoryPagination">
+                <button className="paginationBtn">{'<'}</button>
+                <button className="paginationBtn">{'>'}</button>
             </div>
         </div>
-    )
+    );
 }
