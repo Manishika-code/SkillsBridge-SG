@@ -1,1 +1,37 @@
-.vscode/*
+
+# Python cache / bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.env/
+.env.bak/
+.venv/
+
+# Django stuff
+*.log
+media/
+staticfiles/
+*.pot
+*.mo
+
+# VS Code / JetBrains / editors
+.vscode/
+.idea/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node / React frontend
+node_modules/
+dist/
+build/
+
+# Environment configs
+.env.local
+.env.production
+.env.development
