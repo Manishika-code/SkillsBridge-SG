@@ -6,6 +6,8 @@ from .views import (
 )
 from .auth_views import register, me
 
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
 router = DefaultRouter()
 router.register(r"courses", CourseViewSet, basename="course")
 router.register(r"skills",  SkillViewSet,  basename="skill")
@@ -20,6 +22,8 @@ urlpatterns = [
     # auth helpers
     path("auth/register/", register),
     path("auth/me/", me),
+    path("auth/login/", TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path("auth/refresh/", TokenRefreshView.as_view(), name='token_refresh'),
     # path('', include('skillsbridge_sg.urls')),
 ]
 

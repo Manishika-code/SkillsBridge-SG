@@ -6,17 +6,24 @@ from rest_framework.serializers import ModelSerializer, CharField, ValidationErr
 
 class RegisterSerializer(ModelSerializer):
     password = CharField(write_only=True, min_length=6)
-    role = CharField(write_only=True, required=False)  # optional: default student
+    role = CharField(write_only=True, required=False)
+
     class Meta:
         model = User
         fields = ["username", "email", "password", "role"]
 
     def create(self, validated_data):
         role = validated_data.pop("role", "student").lower()
-        user = User.objects.create_user(**validated_data)  # hashes password
+        password = validated_data.pop("password")
+
+        user = User.objects.create_user(**validated_data)
+        user.set_password(password)
+        user.save()
+
         grp, _ = Group.objects.get_or_create(name=role)
         user.groups.add(grp)
         return user
+
 
 @api_view(["POST"])
 @permission_classes([permissions.AllowAny])

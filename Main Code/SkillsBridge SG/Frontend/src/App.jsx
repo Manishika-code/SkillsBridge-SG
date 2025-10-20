@@ -5,6 +5,7 @@ import Dashboard from './Pages/Dashboard.jsx';
 import Login from './Pages/Login.jsx';
 import Category from './Pages/Category.jsx';
 import Compare from './Pages/Compare.jsx';
+import Register from './Pages/Register.jsx';
 
 export default function App() {
   // Define all routing paths
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/loginPage" element={<Login/>} />
         <Route path="/categoryPage" element={<Category/>} />
         <Route path="/comparePage" element={<Compare/>} />
+        <Route path="/registerPage" element={<Register/>} />
       </Routes>     
     </>
   )
