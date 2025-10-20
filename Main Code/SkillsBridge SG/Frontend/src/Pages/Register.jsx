@@ -8,15 +8,61 @@ export default function Register() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const isFormValid = username.trim() !== '' && 
-                        password.trim() !== '' && 
-                        confirmPassword.trim() !== '';
+    const isFormValid =
+        username.trim() !== '' &&
+        password.trim() !== '' &&
+        confirmPassword.trim() !== '';
 
-    const handleSignUp = () => {
-        if (isFormValid) {
-            navigate('/loginPage');
+    const handleSignUp = async (e) => {
+        e.preventDefault();
+        setError('');
+
+        if (!isFormValid) return;
+        if (password !== confirmPassword) {
+            setError("Passwords do not match");
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const response = await fetch("http://127.0.0.1:8000/api/auth/register/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                    role: "student" // optional default role
+                }),
+            });
+
+            if (response.ok) {
+                // success
+                const data = await response.json();
+                console.log("Registered:", data);
+                alert("Registration successful! Please log in.");
+                navigate('/loginPage');
+            } else {
+                // failed validation
+                const errorData = await response.json();
+                console.error("Error response:", errorData);
+                if (errorData.username) {
+                    setError("Username already exists");
+                } else if (errorData.password) {
+                    setError("Password is too short or invalid");
+                } else {
+                    setError("Registration failed. Please check your details.");
+                }
+            }
+        } catch (err) {
+            console.error("Error:", err);
+            setError("Server error. Please try again later.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -28,12 +74,12 @@ export default function Register() {
                     <span className="back-text">BACK</span>
                 </Link>
             </div>
+
             <div className="register-container">
                 <h1 className="register-title">Sign Up</h1>
-                <form className="register-form">
-                    <label className="register-label" htmlFor="username">
-                        Username
-                    </label>
+
+                <form className="register-form" onSubmit={handleSignUp}>
+                    <label className="register-label" htmlFor="username">Username</label>
                     <input
                         type="text"
                         id="username"
@@ -42,9 +88,7 @@ export default function Register() {
                         onChange={(e) => setUsername(e.target.value)}
                     />
 
-                    <label className="register-label" htmlFor="password">
-                        Password
-                    </label>
+                    <label className="register-label" htmlFor="password">Password</label>
                     <div className="password-input-container">
                         <input
                             type={showPassword ? "text" : "password"}
@@ -53,7 +97,7 @@ export default function Register() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
-                        <span 
+                        <span
                             className="password-toggle-icon"
                             onClick={() => setShowPassword(!showPassword)}
                         >
@@ -61,9 +105,7 @@ export default function Register() {
                         </span>
                     </div>
 
-                    <label className="register-label" htmlFor="confirmPassword">
-                        Confirm Password
-                    </label>
+                    <label className="register-label" htmlFor="confirmPassword">Confirm Password</label>
                     <div className="password-input-container">
                         <input
                             type={showConfirmPassword ? "text" : "password"}
@@ -72,7 +114,7 @@ export default function Register() {
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                         />
-                        <span 
+                        <span
                             className="password-toggle-icon"
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                         >
@@ -80,13 +122,14 @@ export default function Register() {
                         </span>
                     </div>
 
-                    <button 
-                        type="button" 
+                    {error && <p className="error-text">{error}</p>}
+
+                    <button
+                        type="submit"
                         className="register-button"
-                        disabled={!isFormValid}
-                        onClick={handleSignUp}
+                        disabled={!isFormValid || loading}
                     >
-                        Sign Up
+                        {loading ? "Signing Up..." : "Sign Up"}
                     </button>
                 </form>
             </div>
