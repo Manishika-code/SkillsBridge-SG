@@ -36,7 +36,7 @@ export default function Register() {
                 body: JSON.stringify({
                     username: username,
                     password: password,
-                    role: "student" // optional default role
+                    role: "student" 
                 }),
             });
 

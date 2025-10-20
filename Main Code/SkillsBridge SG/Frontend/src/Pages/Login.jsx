@@ -23,7 +23,6 @@ export default function Login() {
         setError('');
 
         try {
-            // 1️⃣ Send credentials to Django backend
             const response = await fetch("http://127.0.0.1:8000/api/auth/login/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -39,11 +38,9 @@ export default function Login() {
 
             const data = await response.json();
 
-            // 2️⃣ Save tokens in localStorage
             localStorage.setItem("access", data.access);
             localStorage.setItem("refresh", data.refresh);
 
-            // 3️⃣ Fetch current user info
             const userRes = await fetch("http://127.0.0.1:8000/api/auth/me/", {
                 headers: {
                     "Authorization": `Bearer ${data.access}`
@@ -55,7 +52,6 @@ export default function Login() {
                 localStorage.setItem("user", JSON.stringify(userData));
             }
 
-            // 4️⃣ Redirect to category page
             navigate("/categoryPage");
 
         } catch (err) {
