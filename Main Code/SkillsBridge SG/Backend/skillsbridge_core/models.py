@@ -23,7 +23,10 @@ class Course(models.Model):
 
     course_name = models.CharField(max_length=255)
     course_description = models.TextField(blank=True, null=True)
-    course_code = models.CharField(max_length=50, blank=True, null=True)     # SP dataset
+    course_code = models.CharField(max_length=50, blank=True, null=True)     
+
+    median_salary = models.CharField(max_length=20, blank=True, null=True)
+    employment_rate = models.CharField(max_length=20, blank=True, null=True)
 
     url = models.URLField(blank=True, null=True)
 
