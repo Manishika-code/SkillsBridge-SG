@@ -32,7 +32,27 @@ class Course(models.Model):
 
     def __str__(self): return f"{self.course_name} ({self.institution})"
 
-# courses in skillsfuture (not sure if we need this)
+class CourseIGP(models.Model):
+
+    QUALIFICATIONS = [
+        ("alevel", "A-Level"),
+        ("poly", "Polytechnic"),
+        ("olevel", "O-Level"),
+    ]
+    qualification = models.CharField(max_length=10, choices=QUALIFICATIONS)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    indicative_grade = models.CharField(max_length=50)
+    grade_type = models.CharField(max_length=50) #rp, gpa or o level grade
+    source_url = models.URLField(blank=True, null = True)
+    placements = models.CharField(max_length=10, blank=True, null = True)
+
+    def __str__(self):
+        return f"{self.course.course_name} | {self.grade_type}: {self.indicative_grade}"
+
+    class Meta:
+        unique_together = ("course", "qualification")
+        ordering = ["qualification"]
+
 class CourseSkill(models.Model):
     course    = models.ForeignKey(Course, on_delete=models.CASCADE)
     skill     = models.ForeignKey(Skill, on_delete=models.CASCADE)
