@@ -1,8 +1,9 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
+from django.db.models import Sum, Count
 
-from skillsbridge_core.models import Course, Skill, Industry, SavedPlan
+from skillsbridge_core.models import Course, Skill, Industry, SavedPlan, CourseSkill
 from .serializers import (
     CourseSerializer, SkillSerializer, IndustrySerializer,
     SavedPlanSerializer
@@ -63,6 +64,45 @@ def compare(request):
         return Response({"error": "Compare supports 1–2 courses"}, status=400)
     return Response(CompareService.compare_courses(ids))
 
+@api_view(["POST"])
+@permission_classes([permissions.AllowAny])
+def get_courses_by_skills(request):
+    """
+    POST /api/courses/by-skills/
+    body: { "skills": ["Coding", "Design"], "level": "uni" }
+
+    Returns courses ranked by relevance to selected skills.
+    """
+    skill_names = request.data.get("skills", [])
+    level = request.data.get("level")
+    provider = request.data.get("provider")
+
+    if not skill_names:
+        return Response({"error": "No skills provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+    skills = Skill.objects.filter(name__in=skill_names)
+    if not skills.exists():
+        return Response({"matches": []})
+
+    # ✅ Apply level and provider filters BEFORE annotate/distinct
+    queryset = Course.objects.filter(courseskill__skill__in=skills)
+
+    if level:
+        queryset = queryset.filter(level=level)
+    if provider:
+        queryset = queryset.filter(institution__icontains=provider)
+
+    queryset = (
+        queryset.annotate(
+            matched_skills=Count("courseskill__skill", distinct=True),
+            total_relevance=Sum("courseskill__relevance"),
+        )
+        .order_by("-matched_skills", "-total_relevance")
+        .distinct()
+    )
+
+    serializer = CourseSerializer(queryset, many=True)
+    return Response(serializer.data)
 # ---------- Plans (auth required for writes) ----------
 class SavedPlanViewSet(viewsets.ModelViewSet):
 
