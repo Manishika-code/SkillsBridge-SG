@@ -56,7 +56,6 @@
   font-weight: 700;
   font-size: 1.25rem;
   cursor: pointer;
-  transition: filter .2s ease;
 }
 #buttonRow button:hover{ filter: brightness(.9); }
 
