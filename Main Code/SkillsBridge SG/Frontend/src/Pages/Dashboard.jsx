@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import '../Pages/Dashboard.css';
 
@@ -11,6 +11,7 @@ import CourseRoadMapList from '../Components/CourseRoadMapList';
 import { FiArrowLeftCircle } from "react-icons/fi";
 import { FcInfo } from "react-icons/fc";
 import { FaBookBookmark } from "react-icons/fa6";
+import { FaBookmark } from "react-icons/fa"; // for bookmark-ed
 import { MdCancel } from "react-icons/md";
 import { FaRegBookmark } from "react-icons/fa6";
 
@@ -41,17 +42,127 @@ const cleanCourseName = (courseName) => {
 }
 
 
+{/* Bookmarked Management */}
+const getBookMarkedCourses = () => {
+
+    console.log(localStorage.getItem('BookmarkedCourses')); // print out current list
+
+    return JSON.parse(localStorage.getItem('BookmarkedCourses') || '[]');
+};
+
+// Check if course bookedmarked
+const isCourseBookedMarked = (courseId) => {
+    const bm = getBookMarkedCourses();
+    return bm.includes(courseId);
+}
+
+// Add bookmark to Local Storage
+const addBookmark = (courseId) => {
+    const bm = getBookMarkedCourses();
+
+    if(!bm.includes(courseId)){
+        bm.push(courseId);
+        localStorage.setItem('BookmarkedCourses', JSON.stringify(bm));
+
+        return true;
+    }
+    return false;
+}
+
+// Remove bookmark from LS
+const removeBookmark = (courseId) => {
+    const bm = getBookMarkedCourses();
+    
+    const update = bm.filter(id => id !== courseId);
+    localStorage.setItem('BookmarkedCourses', JSON.stringify(update)); // adding all & replace current list, to exclude the one to remove
+    return true;
+}
+
+
+
 {/* Main Dashboard Code */}
 export default function Dashboard(){ 
      
     {/* ======== Defined datasets ======== */}
     const [courses, setCourses] = useState([]);
-    useEffect(() => {
-      fetch("http://localhost:8000/api/courses/")
-      .then((res) => res.json())
-      .then((data) => setCourses(data))
-      .catch((err) => console.error("Error fetching courses:", err));
-  }, []);
+    const [viewMode, setViewMode] = useState(null);
+
+    // Default fetch all
+    useEffect(() =>{
+        fetchAllCourses();
+    }, []);
+
+    // Fetch ALL
+    const fetchAllCourses = () => {
+        fetch("http://localhost:8000/api/courses/")
+        .then((res) => res.json())
+        .then((data) => {
+            setCourses(data);
+            setViewMode(null);
+    })
+        .catch((err) => console.error("Error fetching courses:", err));
+    }
+
+    // Fetch ONLY Bookmarked 
+    const fetchBookmarks = () => {
+        fetch("http://localhost:8000/api/bookmarked/")  // CHANGE LINK HERE (api bookmark)
+        .then((res) => res.json())
+        .then((data) => {
+            console.log('Bookmarked data:', data);
+            setCourses(data);
+            setViewMode('bookmarks');
+        })
+        .catch((err) => console.error("Error fetching bookmarked courses:", err));
+    }
+    
+    
+    {/* ======== BOOKMARK MANAGEMENT SYSTEM ======== */}
+    // UI Display System
+    const toggleBookmarked = (isBookmark) => {
+        if (isBookmark)
+        {
+            // show bookmarked only
+            setViewMode("bookmarks");
+        }
+        else
+        {
+            // Show original
+            setViewMode(null);
+            window.location.reload();
+        }
+    }
+
+    // Bookmarked Management
+    const [selectedId, setSelectedId] = useState(0); // A variable to fetch latest selected ID
+    
+    // Add bookmark
+    const handleBookMarkClick = () => {
+        const isBookedMarked = isCourseBookedMarked(selectedId);
+
+        if (isBookedMarked) {
+            alert(`Course ID: ${selectedId} is already bookmarked!`);
+        }
+        else
+        {
+            addBookmark(selectedId);
+            alert(`Course ID: ${selectedId} successfully added to bookmarks!`)
+        }
+    }
+
+    // Remove bookmarked
+    const removeBookMark = () => {
+        const isBookedMarked = isCourseBookedMarked(selectedId);
+
+        if (isBookedMarked){
+            removeBookmark(selectedId);
+            alert(`Course ID: ${selectedCard} removed from bookmarks!`);
+        }
+        else
+        {
+            alert(`Course ID: ${selectedCard} is not in your bookmarks!`);
+        }
+    }
+
 
     // Grid Info
     const gridInfo = [
@@ -75,11 +186,19 @@ export default function Dashboard(){
     ]
 
 
-    {/* ======== Navigation Interactions ======== */}    
-    // Selection Card display
+
+    {/* ======== Navigation Interactions ======== */} 
+    // Visitor or Logged In user 
+    const [searchParams] = useSearchParams();
+    const source = searchParams.get('source');
+    // check if coming from visitor
+    const forVisitor = source === 'visitor';
+    
+    // Selection Card display + Fetch selected ID
     const [selectedCard, setSelectedCard] = useState(null);
     const handleSelectedCard = (courseId) =>{
         setSelectedCard(courseId);
+        setSelectedId(courseId); // Save selected ID
     }
 
     // Determine if any card selected first
@@ -162,10 +281,23 @@ export default function Dashboard(){
             <div id='dashboardContainer'>                
                 <div id="topPanel">
                     <div>
-                        <Link to="/"><div className='backBtn'><FiArrowLeftCircle size={40} /></div></Link> {/* To be changed: Direct to different pages for different user */}                
+                        {viewMode === null && (
+                            <Link to="/"><div className='backBtn'><FiArrowLeftCircle size={40} /></div></Link>               
+                        )}
+
+                        {viewMode === "bookmarks" && (
+                            <Link to="/dashboardPage"><div className='backBtn' onClick = {() => {fetchAllCourses(); toggleBookmarked(false)}}><FiArrowLeftCircle size={40} /></div></Link>    
+                        )}
                     </div>
+
                     <div>
-                        <h1>COURSES</h1>
+                        {viewMode === null && (
+                            <h1>COURSES</h1>
+                        )}
+
+                        {viewMode === "bookmarks" && (
+                            <h1>MY BOOKMARKS</h1>
+                        )}
                     </div>
 
                     <div className="filterBar">
@@ -205,10 +337,13 @@ export default function Dashboard(){
 
             <div id="sideContainer">              
                 {activeContent === "original" && (
-                    <div id="beforeSelect">                   
-                        <div id='myBookmarks'>
-                            <button><FaBookBookmark /> Check Out My Bookmarks</button>
-                        </div>
+                    <div id="beforeSelect">  
+                        {/* Only show if NOT visitor */}
+                        {!forVisitor && viewMode == null && (
+                            <div id='myBookmarks'>
+                                <button onClick={() => {fetchBookmarks(); toggleBookmarked(true)}}><FaBookBookmark /> Check Out My Bookmarks</button>
+                            </div>
+                        )}                 
 
                         <div className='infoDisplay'>
                             <h3>Select a course to find out more!</h3>
@@ -223,7 +358,17 @@ export default function Dashboard(){
                         <div id="latestInfo">
                             <div id="topBar">
                                 <button className='cancelBtn' onClick={() => toggleContentClick("ExitToOriginal")}><MdCancel size={40}/></button>
-                                <button className='bookmarkBtn'><FaRegBookmark size={40}/></button>
+                                
+                                {/* Show only for login user */}
+                                {!forVisitor && viewMode == null && (
+                                    <button className='bookmarkBtn' onClick={() => handleBookMarkClick()}><FaRegBookmark size={35}/></button>
+                                )}
+
+                                {/* Show when in bookedmark page */}
+                                {viewMode === "bookmarks" && (
+                                    <button className='bookmarkBtn' onClick={() => removeBookMark()}><FaBookmark size={35}/></button>
+                                )}
+
                             </div>
                         
                             <h1 className="headerSide">Latest Info</h1>                            

@@ -9,7 +9,7 @@
 #homeHeader{ text-align: center; }
 
 /* --- top bar --- */
-#topBar{
+#homeContainer #topBar{
   width: 100%;
   background: #E8E8E8;
   padding: 18px 28px;
@@ -117,10 +117,6 @@
   color: #2f2f2f;
 }
 
-/* mini connector bubbles */
-/* We align the row from the TOP, then drop the tiny dots down
-   so their middle lines up with the big circle's middle.
-   calc((circleHeight - tinyDotSize)/2) = (68 - 12)/2 = 28px */
 .miniDots{
   display: flex;
   align-items: center;
@@ -139,12 +135,5 @@
   opacity: 0.9;
 }
 
-/* widen only the FIRST step so its text wraps to ~2 lines nicely */
 #stepsRow .step:first-of-type{ width: 340px; }
 #stepsRow .step:first-of-type p{ max-width: 32ch; }
-
-/* ---------- tweak these two numbers together if you change sizes ---------- */
-/* If you change .circle height/width or tiny dot size:
-   - update the 68px in .circle
-   - update the 12px in .miniDots span
-   - recompute margin-top: (circle - dot)/2  */

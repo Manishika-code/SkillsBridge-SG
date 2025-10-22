@@ -1,6 +1,8 @@
 import '../Pages/Compare.css';
 import CourseCard from '../Components/Compare(component)';
 import { Link } from "react-router-dom";
+import BackBar from '../Components/BackBar';
+
 
 export default function Compare(){
   const course1 = {
@@ -101,13 +103,11 @@ export default function Compare(){
 
   return (
     <div className='compare-container'>
-      <h1>Compare Results</h1>
+      <BackBar to="/dashboardPage"/>
+
       <div className="cardRow">
         <CourseCard {...course1} />
         <CourseCard {...course2} />
-      </div>
-      <div className="backButton">
-        <Link to="/dashboardPage"><button>Back</button></Link>
       </div>
     </div>
   );

@@ -1,42 +1,31 @@
-#categoryPageWrapper {
+#categoryPage
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     min-height: 100vh;
-    background: #eaeaea;
+}
+
+#categoryPageWrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    padding-bottom: 70px;
+    margin: 30px;
 }
 
-#categoryHeader {
-    align-self: flex-start;
-    margin-top: 35px;
-    margin-left: 54px;
-    font-size: 1.15rem;
-    font-weight: bold;
-}
-
-#backArrow {
-    font-size: 2.1rem;
-    vertical-align: middle;
-    margin-right: 8px;
-}
 
 #categoryTitle {
-    font-size: 2.4rem;
-    margin-top: 24px;
-    font-weight: bold;
-    color: #131323;
-    text-align: center;
+    font-size: 2.3rem;
+    margin-bottom: 50px;
+    text-transform: uppercase;
+    text-decoration: underline;
 }
 
 #skillGrid {
     display: flex;
-    flex-wrap: wrap;
-    gap: 23px 52px;
-    max-width: 990px;
-    margin: 44px auto 0;
     justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px 52px;
 }
 
 #degreeSelector {
@@ -45,28 +34,24 @@
     border-radius: 34px;
     box-shadow: 0 2px 8px rgba(40,40,40,0.07);
     padding: 8px 16px;
-    margin-top: 43px;
+    margin: 40px;
     gap: 8px;
 }
 
 .degreeBtn {
     background: transparent;
     border: none;
-    font-size: 1.04rem;
-    font-weight: 500;
     padding: 6px 25px;
     border-radius: 22px;
     cursor: pointer;
     color: #1a1c2e;
-    outline: 1.4px solid #1a1c2e;
-    transition: background 0.17s, color 0.17s;
 }
-.activeDegree {
-    background: #f5f5f5;
-    color: #1a1c2e;
-    font-weight: bold;
-    outline: 2.3px solid #1a1c2e;
+
+.degreeBtn:hover
+{
+    background-color: rgb(198, 198, 198);
 }
+
 
 #categoryPagination {
     display: flex;

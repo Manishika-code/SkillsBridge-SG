@@ -1,6 +1,7 @@
 import '../Pages/Register.css';
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import BackBar from '../Components/BackBar';
 
 export default function Register() {
     const [username, setUsername] = useState('');
@@ -68,15 +69,11 @@ export default function Register() {
 
     return (
         <div className="register-page">
-            <div className="back-bar">
-                <Link to="/" className="back-link">
-                    <span className="back-arrow">&#8592;</span>
-                    <span className="back-text">BACK</span>
-                </Link>
-            </div>
+            
+            <BackBar to="/loginPage"/>
 
             <div className="register-container">
-                <h1 className="register-title">Sign Up</h1>
+                <h1 className="register-title">SIGN UP</h1>
 
                 <form className="register-form" onSubmit={handleSignUp}>
                     <label className="register-label" htmlFor="username">Username</label>
