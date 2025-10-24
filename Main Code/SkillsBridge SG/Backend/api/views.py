@@ -3,10 +3,10 @@ from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from django.db.models import Sum, Count
 
-from skillsbridge_core.models import Course, Skill, Industry, SavedPlan, CourseSkill
+from skillsbridge_core.models import Course, Skill, Industry, SavedPlan, CourseSkill, Bookmark
 from .serializers import (
     CourseSerializer, SkillSerializer, IndustrySerializer,
-    SavedPlanSerializer
+    SavedPlanSerializer, BookmarkSerializer
 )
 from skillsbridge_core.services import EvidenceService, IndustryService, CompareService
 
@@ -84,7 +84,7 @@ def get_courses_by_skills(request):
     if not skills.exists():
         return Response({"matches": []})
 
-    # ✅ Apply level and provider filters BEFORE annotate/distinct
+    # Apply level and provider filters BEFORE annotate/distinct
     queryset = Course.objects.filter(courseskill__skill__in=skills)
 
     if level:
@@ -114,3 +114,47 @@ class SavedPlanViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+# --------- Bookmark --------- 
+class BookmarkViewSet(viewsets.ViewSet):
+    """
+        GET /api/bookmarks/ lists all bookmarks
+        POST /api/bookmarks/ add bookmark 
+        DELETE /api/bookmarks/<course_id> remove bookmarks
+    """
+    # ensures user is authenticated for bookmark
+    permission_classes = [permissions.IsAuthenticated]
+
+    def list(self, request):
+        """GET /api/bookmarks"""
+        bookmarks = Bookmark.objects.filter(user=request.user).select_related("course")
+        serializer = BookmarkSerializer(bookmarks, many=True)
+        return Response(serializer.data)
+
+    def create(self, request):
+        """POST /api/bookmarks/ body: { "course_id": <id> }"""
+        course_id = request.data.get("course_id")
+        if not course_id:
+            return Response({"error": "course_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            course = Course.objects.get(id=course_id)
+        except Course.DoesNotExist:
+            return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        bookmark, created = Bookmark.objects.get_or_create(user=request.user, course=course)
+        if not created:
+            return Response({"message": "Course already bookmarked"}, status=status.HTTP_200_OK)
+
+        serializer = BookmarkSerializer(bookmark)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+    def destroy(self, request, pk=None):
+        """DELETE /api/bookmarks/<course_id>/"""
+        bookmark = Bookmark.objects.filter(user=request.user, course_id=pk)
+        if not bookmark.exists():
+            return Response({"error": "Bookmark not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        bookmark.delete()
+        return Response({"message": "Bookmark removed"}, status=status.HTTP_204_NO_CONTENT)

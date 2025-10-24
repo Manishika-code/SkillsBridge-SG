@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
     CourseViewSet, SkillViewSet, IndustryViewSet,
-    evidence, compare, SavedPlanViewSet, get_courses_by_skills
+    evidence, compare, SavedPlanViewSet, get_courses_by_skills, BookmarkViewSet
 )
 
 from .auth_views import register, me
@@ -14,6 +14,7 @@ router.register(r"courses", CourseViewSet, basename="course")
 router.register(r"skills",  SkillViewSet,  basename="skill")
 router.register(r"industries", IndustryViewSet, basename="industry")
 router.register(r"plans", SavedPlanViewSet, basename="plan")
+router.register(r"bookmarks", BookmarkViewSet, basename="bookmark")
 
 urlpatterns = [
     path("courses/by-skills/", get_courses_by_skills, name="get_courses_by_skills"),

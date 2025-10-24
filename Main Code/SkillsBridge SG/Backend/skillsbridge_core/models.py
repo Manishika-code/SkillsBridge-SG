@@ -100,10 +100,19 @@ class SavedPlanNode(models.Model):
     ref_id   = models.CharField(max_length=36)
     order_idx= models.IntegerField()
 
-# tba
-class Glossary(models.Model):
-    key   = models.CharField(primary_key=True, max_length=128)
-    value = models.TextField()
+#bookmarked courses 
+class Bookmark(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bookmarks")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="bookmarked_by")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'course') # ensures we have no dupes
+
+    def __str__(self):
+        return f"{self.user.username} bookmarked {self.course.course_name}"
+    
+
 
 
 
