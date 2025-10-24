@@ -223,9 +223,12 @@ export default function Dashboard(){
             // Only allow 2 selections
             if (selectedCourses.length < 2)
             {
-                setSelectedCourses([...selectedCourses, courseId]);
+                const listSelectionCourses = [...selectedCourses, courseId];
+                setSelectedCourses(listSelectionCourses);
+
                 if (selectedCourses.length == 1)
                 {
+                    console.log(listSelectionCourses);  // Return a list with selected 2 courseID for compare
                     // Max comparisons reached, Enable Compare btn
                     setIsDisabled(false);
                 }
