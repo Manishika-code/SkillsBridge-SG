@@ -15,6 +15,16 @@ import { FaBookmark } from "react-icons/fa"; // for bookmark-ed
 import { MdCancel } from "react-icons/md";
 import { FaRegBookmark } from "react-icons/fa6";
 
+// Backend base URL 
+const API_BASE = "http://localhost:8000/api";
+
+// Get login access token 
+const getToken = () => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("access");
+  }
+  return null;
+};
 
 {/* Display of data logic */}
 // For institution display
@@ -41,44 +51,111 @@ const cleanCourseName = (courseName) => {
     return courseName;
 }
 
-
-{/* Bookmarked Management */}
-const getBookMarkedCourses = () => {
-
-    console.log(localStorage.getItem('BookmarkedCourses')); // print out current list
-
-    return JSON.parse(localStorage.getItem('BookmarkedCourses') || '[]');
+// Bookmark API functions
+const getBookMarkedCourses = async () => {
+  try {
+    const res = await fetch(`${API_BASE}/bookmarks/`, {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+    });
+    if (!res.ok) throw new Error("Failed to fetch bookmarks");
+    const data = await res.json();
+    return data.map(b => b.course);
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
 };
 
-// Check if course bookedmarked
-const isCourseBookedMarked = (courseId) => {
-    const bm = getBookMarkedCourses();
-    return bm.includes(courseId);
-}
-
-// Add bookmark to Local Storage
-const addBookmark = (courseId) => {
-    const bm = getBookMarkedCourses();
-
-    if(!bm.includes(courseId)){
-        bm.push(courseId);
-        localStorage.setItem('BookmarkedCourses', JSON.stringify(bm));
-
-        return true;
+const addBookmark = async (courseId) => {
+  try {
+    const res = await fetch(`${API_BASE}/bookmarks/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getToken()}`,
+      },
+      body: JSON.stringify({course_id: courseId}),
+    });
+    if (res.status === 201) {
+      alert("Added to bookmarks");
+      return true;
+    } else if (res.status === 200) {
+      alert("Already bookmarked");
+      return false;
+    } else {
+      throw new Error("Error adding bookmark");
     }
+  } catch (err) {
+    console.error(err);
+    alert("Failed to add bookmark");
     return false;
-}
+  }
+};
 
-// Remove bookmark from LS
-const removeBookmark = (courseId) => {
-    const bm = getBookMarkedCourses();
-    
-    const update = bm.filter(id => id !== courseId);
-    localStorage.setItem('BookmarkedCourses', JSON.stringify(update)); // adding all & replace current list, to exclude the one to remove
-    return true;
-}
+const removeBookmark = async (courseId) => {
+  try {
+    const res = await fetch(`${API_BASE}/bookmarks/${courseId}/`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+    });
+    if (res.status == 204) {
+        alert("Bookmark removed");
+        return true;
+    } else if (res.status === 200) {
+        alert("Already bookmarked");
+      return false;
+    } else {
+        throw new Error("Error adding bookmark");
+    } 
+  } catch (err) {
+      console.error(err);
+      alert("Failed to add bookmark");
+      return false;
+  }
+};
 
-
+// 
+// {/* Bookmarked Management */}
+// const getBookMarkedCourses = () => {
+// 
+//     console.log(localStorage.getItem('BookmarkedCourses')); // print out current list
+// 
+//     return JSON.parse(localStorage.getItem('BookmarkedCourses') || '[]');
+// };
+// 
+// // Check if course bookedmarked
+// const isCourseBookedMarked = (courseId) => {
+//     const bm = getBookMarkedCourses();
+//     return bm.includes(courseId);
+// }
+// 
+// // Add bookmark to Local Storage
+// const addBookmark = (courseId) => {
+//     const bm = getBookMarkedCourses();
+// 
+//     if(!bm.includes(courseId)){
+//         bm.push(courseId);
+//         localStorage.setItem('BookmarkedCourses', JSON.stringify(bm));
+// 
+//         return true;
+//     }
+//     return false;
+// }
+// 
+// // Remove bookmark from LS
+// const removeBookmark = (courseId) => {
+//     const bm = getBookMarkedCourses();
+//     
+//     const update = bm.filter(id => id !== courseId);
+//     localStorage.setItem('BookmarkedCourses', JSON.stringify(update)); // adding all & replace current list, to exclude the one to remove
+//     return true;
+// }
+// 
+// 
 
 {/* Main Dashboard Code */}
 export default function Dashboard(){ 
@@ -103,67 +180,41 @@ export default function Dashboard(){
         .catch((err) => console.error("Error fetching courses:", err));
     }
 
-    // Fetch ONLY Bookmarked 
-    const fetchBookmarks = () => {
-        fetch("http://localhost:8000/api/bookmarked/")  // CHANGE LINK HERE (api bookmark)
-        .then((res) => res.json())
-        .then((data) => {
-            console.log('Bookmarked data:', data);
-            setCourses(data);
-            setViewMode('bookmarks');
-        })
-        .catch((err) => console.error("Error fetching bookmarked courses:", err));
-    }
-    
+    const fetchBookmarks = async () => {
+    const data = await getBookMarkedCourses();
+    console.log("Bookmarked data:", data);
+    setCourses(data);
+    setViewMode("bookmarks");
+  }
+   
     
     {/* ======== BOOKMARK MANAGEMENT SYSTEM ======== */}
-    // UI Display System
+     // Bookmarked Management
     const toggleBookmarked = (isBookmark) => {
-        if (isBookmark)
-        {
-            // show bookmarked only
-            setViewMode("bookmarks");
-        }
-        else
-        {
-            // Show original
-            setViewMode(null);
-            window.location.reload();
-        }
-    }
+          if (isBookmark)
+          {
+              // show bookmarked only
+              setViewMode("bookmarks");
+          }
+          else
+          {
+              // Show original
+              setViewMode(null);
+              window.location.reload();
+          }
+      }
+    const handleBookMarkClick = async () => {
+      const success = await addBookmark(selectedId);
+      if (success) fetchBookmarks();
+    };
 
-    // Bookmarked Management
+    const removeBookMark = async () => {
+      const success = await removeBookmark(selectedId);
+      if (success) fetchBookmarks();
+    };
+
     const [selectedId, setSelectedId] = useState(0); // A variable to fetch latest selected ID
     
-    // Add bookmark
-    const handleBookMarkClick = () => {
-        const isBookedMarked = isCourseBookedMarked(selectedId);
-
-        if (isBookedMarked) {
-            alert(`Course ID: ${selectedId} is already bookmarked!`);
-        }
-        else
-        {
-            addBookmark(selectedId);
-            alert(`Course ID: ${selectedId} successfully added to bookmarks!`)
-        }
-    }
-
-    // Remove bookmarked
-    const removeBookMark = () => {
-        const isBookedMarked = isCourseBookedMarked(selectedId);
-
-        if (isBookedMarked){
-            removeBookmark(selectedId);
-            alert(`Course ID: ${selectedCard} removed from bookmarks!`);
-        }
-        else
-        {
-            alert(`Course ID: ${selectedCard} is not in your bookmarks!`);
-        }
-    }
-
-
     // Grid Info
     const gridInfo = [
         {id: 1, header: "Elr2b2 type", data: "A"},
@@ -276,7 +327,6 @@ export default function Dashboard(){
                 break;
         }
     };
-
 
     {/* Frontend */}    
     return (
