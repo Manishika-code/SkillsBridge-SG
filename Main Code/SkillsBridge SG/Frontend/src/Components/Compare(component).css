@@ -2,16 +2,27 @@
 .course-card {
   display: flex;
   flex-direction: column;
-  width: 440px;                  /* a little wider than before */
+  width: 550px;                  /* a little wider than before */
   align-items: stretch;
-  padding: 24px;                 /* more padding */
-  border: 1px solid #000;
+  padding: 30px;                 /* more padding */
   border-radius: 14px;
   background-color: #fff;
   color: #333;
   text-align: left;
-  box-shadow: 0 6px 18px rgba(0,0,0,.06);
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
 }
+
+.cardContent .qualific
+{
+  text-align: center;
+}
+
+.cardContent .courseName
+{
+  text-align: center;
+  padding-bottom: 20px;
+}
+
 
 /* Sections */
 .section {

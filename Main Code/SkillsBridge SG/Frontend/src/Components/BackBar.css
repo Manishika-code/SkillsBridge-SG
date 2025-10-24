@@ -1,0 +1,14 @@
+#defaultBackBar .backBtn
+{
+    position: absolute;
+    top: 5%;
+    left: 3%;
+    color: black;
+    transform: scale(1);
+    transition: transform 0.2s ease-in-out;
+}
+
+#defaultBackBar .backBtn:hover
+{
+    transform: scale(1.1);
+}

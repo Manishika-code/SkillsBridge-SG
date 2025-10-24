@@ -15,8 +15,8 @@ export default function Home() {
         <h1>Your Future Starts Here !</h1>
 
         <div id="buttonRow">
-          <Link to="/dashboardPage"><button>Parent</button></Link>
-          <Link to="/loginPage"><button>Student</button></Link>
+          <Link to="/dashboardPage?source=visitor"><button>Visitor</button></Link>
+          <Link to="/loginPage?source=login"><button>Login</button></Link>
         </div>
       </section>
 

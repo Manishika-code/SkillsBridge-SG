@@ -205,11 +205,14 @@
     justify-content: flex-start;
     flex-direction: column;
     gap: 1em;
-
     max-height: 250px;
     overflow-y: auto;
 }
 
+#roadMap .headerSide
+{
+    padding-top: 15px;
+}
 
 .coursesContainer .outerBorder
 {

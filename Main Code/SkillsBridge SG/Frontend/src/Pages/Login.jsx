@@ -1,6 +1,7 @@
 import '../Pages/Login.css';
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import BackBar from '../Components/BackBar';
 
 export default function Login() {
     const [username, setUsername] = useState('');
@@ -64,14 +65,11 @@ export default function Login() {
 
     return (
         <div className="login-page">
-            <div className="back-bar">
-                <Link to="/" className="back-link">
-                    <span className="back-arrow">&#8592;</span>
-                    <span className="back-text">BACK</span>
-                </Link>
-            </div>
             <div className="login-container">
-                <h1 className="login-title">Log in</h1>
+
+                <BackBar to="/"/>
+
+                <h1 className="login-title">LOG IN</h1>
 
                 <form className="login-form" onSubmit={handleLogin}>
                     <label className="login-label" htmlFor="username">Username</label>
@@ -113,7 +111,7 @@ export default function Login() {
                     </button>
 
                     <p className="signup-text">
-                        Don’t have an account? <Link to="/registerPage">Sign up</Link>
+                        Don’t have an account? <Link to="/registerPage">Sign up!</Link>
                     </p>
                 </form>
             </div>
