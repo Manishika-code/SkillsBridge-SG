@@ -562,7 +562,9 @@ export default function Dashboard(){
                             </div>   
 
                             <div id="compareBtn">
-                                <Link to="/comparePage"><button disabled={isDisabled}>COMPARE!</button></Link>                                
+                              <Link to={`/comparePage?courseIds=${selectedCourses.join(",")}`}>
+                                <button disabled={isDisabled}>COMPARE!</button>
+                              </Link>
                             </div>
                         </div>
                     </div>
