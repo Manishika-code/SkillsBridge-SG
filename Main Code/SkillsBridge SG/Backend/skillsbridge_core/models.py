@@ -112,7 +112,28 @@ class Bookmark(models.Model):
     def __str__(self):
         return f"{self.user.username} bookmarked {self.course.course_name}"
     
+class DiplomaToDegree(models.Model):
+    id = models.CharField(primary_key=True, max_length=36, default=uid, editable=False)
+    diploma = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name="degree_pathways",
+        limit_choices_to={"level": "poly"}
+    )
+    degree = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name="diploma_sources",
+        limit_choices_to={"level": "uni"}
+    )
+    relevance_score = models.FloatField(default=1.0)  
+    notes = models.TextField(blank=True, null=True)  
 
+    class Meta:
+        unique_together = ("diploma", "degree")
+
+    def __str__(self):
+        return f"{self.diploma.course_name} → {self.degree.course_name}"
 
 
 

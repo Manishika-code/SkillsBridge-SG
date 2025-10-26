@@ -3,10 +3,10 @@ from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from django.db.models import Sum, Count
 
-from skillsbridge_core.models import Course, Skill, Industry, SavedPlan, CourseSkill, Bookmark
+from skillsbridge_core.models import Course, Skill, Industry, SavedPlan, CourseSkill, Bookmark, DiplomaToDegree
 from .serializers import (
     CourseSerializer, SkillSerializer, IndustrySerializer,
-    SavedPlanSerializer, BookmarkSerializer
+    SavedPlanSerializer, BookmarkSerializer, DiplomaToDegreeSerializer
 )
 from skillsbridge_core.services import EvidenceService, IndustryService, CompareService
 
@@ -158,3 +158,25 @@ class BookmarkViewSet(viewsets.ViewSet):
 
         bookmark.delete()
         return Response({"message": "Bookmark removed"}, status=status.HTTP_204_NO_CONTENT)
+
+class DiplomaToDegreeViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    /api/pathways/?diploma=<id>   -> get degree options for that diploma
+    /api/pathways/?degree=<id>    -> get diplomas that lead to this degree
+    """
+    queryset = DiplomaToDegree.objects.select_related("diploma", "degree")
+    serializer_class = DiplomaToDegreeSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        diploma_id = self.request.query_params.get("diploma")
+        degree_id = self.request.query_params.get("degree")
+
+        if diploma_id:
+            queryset = queryset.filter(diploma_id=diploma_id)
+        if degree_id:
+            queryset = queryset.filter(degree_id=degree_id)
+
+        return queryset
+
