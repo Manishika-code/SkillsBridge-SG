@@ -118,6 +118,7 @@ const removeBookmark = async (courseId) => {
   }
 };
 
+// fetch course logic
 // 
 // {/* Bookmarked Management */}
 // const getBookMarkedCourses = () => {
@@ -163,11 +164,33 @@ export default function Dashboard(){
     {/* ======== Defined datasets ======== */}
     const [courses, setCourses] = useState([]);
     const [viewMode, setViewMode] = useState(null);
+    const [selectedId, setSelectedId] = useState(0); // A variable to fetch latest selected ID
+    const [activeContent, setActiveContent] = useState("original");
+    const [searchParams] = useSearchParams();
 
     // Default fetch all
-    useEffect(() =>{
+    const skillsParam = searchParams.get("skills");
+    const levelParam = searchParams.get("level");
+
+    {/* ======== Navigation Interactions ======== */} 
+    // Visitor or Logged In user 
+    const source = searchParams.get('source');
+    // check if coming from visitor
+    const forVisitor = source === 'visitor';
+
+    useEffect(() => {
+      const skillsParam = searchParams.get("skills");
+      const levelParam = searchParams.get("level");
+
+      if (skillsParam) {
+        const skillList = skillsParam.split(",");
+        fetchCoursesBySkills(skillList, levelParam);
+      } else {
         fetchAllCourses();
+
+      }
     }, []);
+
 
     // Fetch ALL
     const fetchAllCourses = () => {
@@ -180,6 +203,25 @@ export default function Dashboard(){
         .catch((err) => console.error("Error fetching courses:", err));
     }
 
+    const fetchCoursesBySkills = (skillList, level) => {
+            fetch(`${API_BASE}/courses/by-skills/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    skills: skillList,
+                    level: level,
+                }),
+            })
+                .then(res => res.json())
+                .then(data => {
+                    setCourses(data);
+                    setViewMode(null);
+                })
+                .catch(err => console.error("Error fetching by skills:", err));
+        };
+    
     const fetchBookmarks = async () => {
     const data = await getBookMarkedCourses();
     console.log("Bookmarked data:", data);
@@ -213,7 +255,6 @@ export default function Dashboard(){
       if (success) fetchBookmarks();
     };
 
-    const [selectedId, setSelectedId] = useState(0); // A variable to fetch latest selected ID
     
     // Grid Info
     const gridInfo = [
@@ -238,13 +279,7 @@ export default function Dashboard(){
 
 
 
-    {/* ======== Navigation Interactions ======== */} 
-    // Visitor or Logged In user 
-    const [searchParams] = useSearchParams();
-    const source = searchParams.get('source');
-    // check if coming from visitor
-    const forVisitor = source === 'visitor';
-    
+        
     // Selection Card display + Fetch selected ID
     const [selectedCard, setSelectedCard] = useState(null);
     const handleSelectedCard = (courseId) =>{
@@ -301,7 +336,7 @@ export default function Dashboard(){
     }
 
     // Toggle function
-    const [activeContent, setActiveContent] = useState("original");
+    
     const toggleContentClick = (contentClicked) => {
         switch (contentClicked){
             case "card":
@@ -327,6 +362,7 @@ export default function Dashboard(){
                 break;
         }
     };
+    
 
     {/* Frontend */}    
     return (

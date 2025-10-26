@@ -77,3 +77,15 @@
 .paginationBtn:hover {
     filter: brightness(95%);
 }
+
+.skillCard.selected {
+    background-color: #b0e0ff;
+    border: 2px solid #0077ff;
+}
+
+.degreeBtn.active {
+  background-color: #000;
+  color: #fff;
+  border-color: #000;
+  transform: scale(1.05);
+}

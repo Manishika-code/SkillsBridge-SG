@@ -33,3 +33,9 @@
     color: #181836;
     font-weight: bold;
 }
+
+.skillContainer.selected {
+    background-color: #d6eaff;      /* light blue highlight */
+    border: 2px solid #0077ff;
+    box-shadow: 0 0 10px rgba(0, 119, 255, 0.3);
+}

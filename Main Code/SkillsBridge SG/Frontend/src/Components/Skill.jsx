@@ -1,8 +1,11 @@
 import '../Components/Skill.css';
 
-const Skill = ({ icon, skillName }) => {
+const Skill = ({ icon, skillName, onClick, isSelected }) => {
     return (
-        <div className="skillContainer">
+        <div 
+            className={`skillContainer ${isSelected ? "selected" : ""}`}
+            onClick={onClick}
+        >
             <div className="skillContent">
                 <span className="skillIcon">{icon}</span>
                 <h2 className="skillTitle">{skillName}</h2>
@@ -12,3 +15,4 @@ const Skill = ({ icon, skillName }) => {
 };
 
 export default Skill;
+
