@@ -1,13 +1,14 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Sum, Count
 
-from skillsbridge_core.models import Course, Skill, Industry, SavedPlan, CourseSkill, Bookmark, DiplomaToDegree, Career, CourseCareer
+from skillsbridge_core.models import Course, Skill, Industry, SavedPlan, CourseSkill, Bookmark, DiplomaToDegree, Career, CourseCareer, CourseIGP
 from .serializers import (
     CourseSerializer, SkillSerializer, IndustrySerializer,
     SavedPlanSerializer, BookmarkSerializer, DiplomaToDegreeSerializer,
-    CareerSerializer, CourseCareerSerializer
+    CareerSerializer, CourseCareerSerializer, CourseIGPSerializer
 )
 from skillsbridge_core.services import EvidenceService, IndustryService, CompareService
 
@@ -19,7 +20,7 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Course.objects.all().prefetch_related("skills")
     serializer_class = CourseSerializer
     permission_classes = [permissions.AllowAny]
-    filterset_fields = ["level", "provider", "name", "skills__name"]  # needs django-filter
+    filterset_fields = ["level", "institution", "course_name", "skills__name"]
 
 class SkillViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Skill.objects.all()
@@ -168,6 +169,8 @@ class DiplomaToDegreeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = DiplomaToDegree.objects.select_related("diploma", "degree")
     serializer_class = DiplomaToDegreeSerializer
     permission_classes = [permissions.AllowAny]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["diploma__id"]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -196,6 +199,8 @@ class CourseCareerViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = CourseCareer.objects.select_related("course", "career")
     serializer_class = CourseCareerSerializer
     permission_classes = [permissions.AllowAny]
+    filterset_fields = ["course__id"]
+    filter_backends = [DjangoFilterBackend]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -208,3 +213,11 @@ class CourseCareerViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(career_id=career_id)
 
         return queryset
+
+
+class CourseIGPViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = CourseIGP.objects.all().select_related("course")
+    serializer_class = CourseIGPSerializer
+    permission_classes = [permissions.AllowAny]
+    filterset_fields = ["course__id", "qualification"]
+    filter_backends = [DjangoFilterBackend]

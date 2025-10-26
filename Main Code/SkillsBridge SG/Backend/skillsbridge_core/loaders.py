@@ -588,7 +588,7 @@ def load_nus_igp(html_path):
         # --- A-Level ---
         if cname in records_alevel:
             v = records_alevel[cname]
-            igp_str = f"{v['10th']} – {v['90th']}".strip(" –")
+            igp_str = f"{v['10th']}".strip(" –")
             CourseIGP.objects.update_or_create(
                 course=course,
                 qualification="alevel",
@@ -603,7 +603,7 @@ def load_nus_igp(html_path):
         # --- Polytechnic ---
         if cname in records_poly:
             v = records_poly[cname]
-            igp_str = f"{v['10th']} – {v['90th']}".strip(" –")
+            igp_str = f"{v['10th']}".strip(" –")
             CourseIGP.objects.update_or_create(
                 course=course,
                 qualification="poly",
@@ -712,7 +712,7 @@ def load_smu_igp(html_path):
         # --- A-Level (letter grades) ---
         if cname in records_alevel:
             v = records_alevel[cname]
-            igp_str = f"{v['10th']} – {v['90th']}".strip(" –")
+            igp_str = f"{v['10th']}".strip(" –")
             CourseIGP.objects.update_or_create(
                 course=course,
                 qualification="alevel",
@@ -727,7 +727,7 @@ def load_smu_igp(html_path):
         # --- Polytechnic (GPA) ---
         if cname in records_poly:
             v = records_poly[cname]
-            igp_str = f"{v['10th']} – {v['90th']}".strip(" –")
+            igp_str = f"{v['10th']}".strip(" –")
             CourseIGP.objects.update_or_create(
                 course=course,
                 qualification="poly",

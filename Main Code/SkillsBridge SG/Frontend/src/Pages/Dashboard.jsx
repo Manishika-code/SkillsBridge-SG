@@ -168,6 +168,10 @@ export default function Dashboard(){
     const [activeContent, setActiveContent] = useState("original");
     const [searchParams] = useSearchParams();
 
+   const [igpInfo, setIgpInfo] = useState([]);
+   const [degreePathways, setDegreePathways] = useState([]);
+   const [careerPaths, setCareerPaths] = useState([]);
+
     // Default fetch all
     const skillsParam = searchParams.get("skills");
     const levelParam = searchParams.get("level");
@@ -222,6 +226,28 @@ export default function Dashboard(){
                 .catch(err => console.error("Error fetching by skills:", err));
         };
     
+    useEffect(() => {
+      if (!selectedId) return;
+    
+      // Fetch IGP
+      fetch(`${API_BASE}/igp/?course__id=${selectedId}`)
+        .then(res => res.json())
+        .then(data => setIgpInfo(data))
+        .catch(err => console.error("Error fetching IGP:", err));
+    
+      // Fetch Pathways (Diploma → Degree)
+      fetch(`${API_BASE}/pathways/?diploma__id=${selectedId}`)
+        .then(res => res.json())
+        .then(data => setDegreePathways(data.map(p => p.degree)))
+        .catch(err => console.error("Error fetching Pathways:", err));
+    
+      // Fetch Careers (Course → Career)
+      fetch(`${API_BASE}/career-paths/?course__id=${selectedId}`)
+        .then(res => res.json())
+        .then(data => setCareerPaths(data.map(p => p.career)))
+        .catch(err => console.error("Error fetching Careers:", err));
+    }, [selectedId]);
+
     const fetchBookmarks = async () => {
     const data = await getBookMarkedCourses();
     console.log("Bookmarked data:", data);
@@ -462,13 +488,17 @@ export default function Dashboard(){
                         
                             <h1 className="headerSide">Latest Info</h1>                            
                             <div id="gridContent">
-                                {gridInfo.map((info) => (
-                                    <GridCourseInfo
-                                        key={info.id}
-                                        header={info.header}
-                                        data={info.data}
-                                    />
-                                ))}
+                              {igpInfo.length > 0 ? (
+                                igpInfo.map((igp) => (
+                                  <GridCourseInfo
+                                    key={igp.id}
+                                    header={`${igp.qualification.toUpperCase()} (${igp.grade_type})`}
+                                    data={igp.indicative_grade}
+                                  />
+                                ))
+                              ) : (
+                                <p>No IGP data available.</p>
+                              )}
                             </div>
                         </div>
 
@@ -481,14 +511,17 @@ export default function Dashboard(){
                                 <div className="coursesContainer">
                                     <div className="outerBorder">
                                         <h3>Degree Courses</h3>
-
                                         <div className="theList">
-                                            {degreeCourses.map((dgre) =>(
-                                                <CourseRoadMapList
-                                                    key={dgre.id}
-                                                    itemName={dgre.itemName}
-                                                />
-                                            ))}
+                                          {degreePathways.length > 0 ? (
+                                            degreePathways.map((d) => (
+                                              <CourseRoadMapList
+                                                key={d.id}
+                                                itemName={cleanCourseName(d.course_name)}
+                                              />
+                                            ))
+                                          ) : (
+                                            <p>No linked degree pathways found.</p>
+                                          )}
                                         </div>
                                     </div>
                                 </div>
@@ -499,12 +532,13 @@ export default function Dashboard(){
                                         <h3>Careers</h3>
 
                                             <div className="theList">
-                                            {careers.map((career) =>(
-                                                <CourseRoadMapList
-                                                    key={career.id}
-                                                    itemName={career.itemName}
-                                                />
-                                            ))}
+                                              {careerPaths.length > 0 ? (
+                                                careerPaths.map((career) => (
+                                                  <CourseRoadMapList key={career.id} itemName={career.name} />
+                                                ))
+                                              ) : (
+                                                <p>No career data available.</p>
+                                              )}
                                         </div>
                                     </div>
                                 </div>                            

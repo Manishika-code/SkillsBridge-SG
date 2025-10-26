@@ -9,7 +9,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--threshold",
             type=int,
-            default=2,
+            default=1,
             help="Minimum shared skills between course and career to create a mapping"
         )
 
