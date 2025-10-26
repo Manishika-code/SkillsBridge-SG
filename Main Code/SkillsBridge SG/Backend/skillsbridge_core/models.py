@@ -135,5 +135,29 @@ class DiplomaToDegree(models.Model):
     def __str__(self):
         return f"{self.diploma.course_name} → {self.degree.course_name}"
 
+class Career(models.Model):
+    id = models.CharField(primary_key=True, max_length=36, default=uid, editable=False)
+    name = models.CharField(max_length=128, unique=True)
+    description = models.TextField(blank=True, null=True)
+    skills = models.ManyToManyField(Skill, blank=True)
+    industry = models.ForeignKey(
+        "Industry", null=True, blank=True, on_delete=models.SET_NULL, related_name="careers"
+    )
+
+    def __str__(self):
+        return self.name
+
+class CourseCareer(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="career_paths")
+    career = models.ForeignKey(Career, on_delete=models.CASCADE, related_name="course_links")
+    relevance_score = models.FloatField(default=1.0)
+    notes = models.TextField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ("course", "career")
+
+    def __str__(self):
+        return f"{self.course.course_name} → {self.career.name}"
+
 
 

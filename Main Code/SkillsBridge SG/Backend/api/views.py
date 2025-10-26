@@ -3,10 +3,11 @@ from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from django.db.models import Sum, Count
 
-from skillsbridge_core.models import Course, Skill, Industry, SavedPlan, CourseSkill, Bookmark, DiplomaToDegree
+from skillsbridge_core.models import Course, Skill, Industry, SavedPlan, CourseSkill, Bookmark, DiplomaToDegree, Career, CourseCareer
 from .serializers import (
     CourseSerializer, SkillSerializer, IndustrySerializer,
-    SavedPlanSerializer, BookmarkSerializer, DiplomaToDegreeSerializer
+    SavedPlanSerializer, BookmarkSerializer, DiplomaToDegreeSerializer,
+    CareerSerializer, CourseCareerSerializer
 )
 from skillsbridge_core.services import EvidenceService, IndustryService, CompareService
 
@@ -180,3 +181,30 @@ class DiplomaToDegreeViewSet(viewsets.ReadOnlyModelViewSet):
 
         return queryset
 
+class CareerViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Career.objects.all()
+    serializer_class = CareerSerializer
+    permission_classes = [permissions.AllowAny]
+    filterset_fields = ["name", "industry__name"]
+
+
+class CourseCareerViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    /api/career-paths/?course=<id>
+    /api/career-paths/?career=<id>
+    """
+    queryset = CourseCareer.objects.select_related("course", "career")
+    serializer_class = CourseCareerSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        course_id = self.request.query_params.get("course")
+        career_id = self.request.query_params.get("career")
+
+        if course_id:
+            queryset = queryset.filter(course_id=course_id)
+        if career_id:
+            queryset = queryset.filter(career_id=career_id)
+
+        return queryset

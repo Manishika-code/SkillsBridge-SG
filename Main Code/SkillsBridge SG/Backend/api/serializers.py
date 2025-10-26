@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from skillsbridge_core.models import (
-    Course, Skill, Industry, Metric, SavedPlan, SavedPlanNode, Bookmark, DiplomaToDegree
+    Course, Skill, Industry, Metric, SavedPlan, SavedPlanNode, Bookmark, DiplomaToDegree, Career, CourseCareer
 )
 
 # using factory pattern to convert our django models to REST 
@@ -55,3 +55,19 @@ class DiplomaToDegreeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DiplomaToDegree
         fields = "__all__"
+
+
+class CareerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Career
+        fields = "__all__"
+
+
+class CourseCareerSerializer(serializers.ModelSerializer):
+    course = CourseSerializer(read_only=True)
+    career = CareerSerializer(read_only=True)
+
+    class Meta:
+        model = CourseCareer
+        fields = "__all__"
+
