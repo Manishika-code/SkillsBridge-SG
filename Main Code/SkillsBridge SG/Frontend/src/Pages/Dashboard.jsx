@@ -15,6 +15,16 @@ import { FaBookmark } from "react-icons/fa"; // for bookmark-ed
 import { MdCancel } from "react-icons/md";
 import { FaRegBookmark } from "react-icons/fa6";
 
+// Backend base URL 
+const API_BASE = "http://localhost:8000/api";
+
+// Get login access token 
+const getToken = () => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("access");
+  }
+  return null;
+};
 
 {/* Display of data logic */}
 // For institution display
@@ -41,44 +51,112 @@ const cleanCourseName = (courseName) => {
     return courseName;
 }
 
-
-{/* Bookmarked Management */}
-const getBookMarkedCourses = () => {
-
-    console.log(localStorage.getItem('BookmarkedCourses')); // print out current list
-
-    return JSON.parse(localStorage.getItem('BookmarkedCourses') || '[]');
+// Bookmark API functions
+const getBookMarkedCourses = async () => {
+  try {
+    const res = await fetch(`${API_BASE}/bookmarks/`, {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+    });
+    if (!res.ok) throw new Error("Failed to fetch bookmarks");
+    const data = await res.json();
+    return data.map(b => b.course);
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
 };
 
-// Check if course bookedmarked
-const isCourseBookedMarked = (courseId) => {
-    const bm = getBookMarkedCourses();
-    return bm.includes(courseId);
-}
-
-// Add bookmark to Local Storage
-const addBookmark = (courseId) => {
-    const bm = getBookMarkedCourses();
-
-    if(!bm.includes(courseId)){
-        bm.push(courseId);
-        localStorage.setItem('BookmarkedCourses', JSON.stringify(bm));
-
-        return true;
+const addBookmark = async (courseId) => {
+  try {
+    const res = await fetch(`${API_BASE}/bookmarks/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getToken()}`,
+      },
+      body: JSON.stringify({course_id: courseId}),
+    });
+    if (res.status === 201) {
+      alert("Added to bookmarks");
+      return true;
+    } else if (res.status === 200) {
+      alert("Already bookmarked");
+      return false;
+    } else {
+      throw new Error("Error adding bookmark");
     }
+  } catch (err) {
+    console.error(err);
+    alert("Failed to add bookmark");
     return false;
-}
+  }
+};
 
-// Remove bookmark from LS
-const removeBookmark = (courseId) => {
-    const bm = getBookMarkedCourses();
-    
-    const update = bm.filter(id => id !== courseId);
-    localStorage.setItem('BookmarkedCourses', JSON.stringify(update)); // adding all & replace current list, to exclude the one to remove
-    return true;
-}
+const removeBookmark = async (courseId) => {
+  try {
+    const res = await fetch(`${API_BASE}/bookmarks/${courseId}/`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+    });
+    if (res.status == 204) {
+        alert("Bookmark removed");
+        return true;
+    } else if (res.status === 200) {
+        alert("Already bookmarked");
+      return false;
+    } else {
+        throw new Error("Error adding bookmark");
+    } 
+  } catch (err) {
+      console.error(err);
+      alert("Failed to add bookmark");
+      return false;
+  }
+};
 
-
+// fetch course logic
+// 
+// {/* Bookmarked Management */}
+// const getBookMarkedCourses = () => {
+// 
+//     console.log(localStorage.getItem('BookmarkedCourses')); // print out current list
+// 
+//     return JSON.parse(localStorage.getItem('BookmarkedCourses') || '[]');
+// };
+// 
+// // Check if course bookedmarked
+// const isCourseBookedMarked = (courseId) => {
+//     const bm = getBookMarkedCourses();
+//     return bm.includes(courseId);
+// }
+// 
+// // Add bookmark to Local Storage
+// const addBookmark = (courseId) => {
+//     const bm = getBookMarkedCourses();
+// 
+//     if(!bm.includes(courseId)){
+//         bm.push(courseId);
+//         localStorage.setItem('BookmarkedCourses', JSON.stringify(bm));
+// 
+//         return true;
+//     }
+//     return false;
+// }
+// 
+// // Remove bookmark from LS
+// const removeBookmark = (courseId) => {
+//     const bm = getBookMarkedCourses();
+//     
+//     const update = bm.filter(id => id !== courseId);
+//     localStorage.setItem('BookmarkedCourses', JSON.stringify(update)); // adding all & replace current list, to exclude the one to remove
+//     return true;
+// }
+// 
+// 
 
 {/* Main Dashboard Code */}
 export default function Dashboard(){ 
@@ -86,11 +164,37 @@ export default function Dashboard(){
     {/* ======== Defined datasets ======== */}
     const [courses, setCourses] = useState([]);
     const [viewMode, setViewMode] = useState(null);
+    const [selectedId, setSelectedId] = useState(0); // A variable to fetch latest selected ID
+    const [activeContent, setActiveContent] = useState("original");
+    const [searchParams] = useSearchParams();
+
+   const [igpInfo, setIgpInfo] = useState([]);
+   const [degreePathways, setDegreePathways] = useState([]);
+   const [careerPaths, setCareerPaths] = useState([]);
 
     // Default fetch all
-    useEffect(() =>{
+    const skillsParam = searchParams.get("skills");
+    const levelParam = searchParams.get("level");
+
+    {/* ======== Navigation Interactions ======== */} 
+    // Visitor or Logged In user 
+    const source = searchParams.get('source');
+    // check if coming from visitor
+    const forVisitor = source === 'visitor';
+
+    useEffect(() => {
+      const skillsParam = searchParams.get("skills");
+      const levelParam = searchParams.get("level");
+
+      if (skillsParam) {
+        const skillList = skillsParam.split(",");
+        fetchCoursesBySkills(skillList, levelParam);
+      } else {
         fetchAllCourses();
+
+      }
     }, []);
+
 
     // Fetch ALL
     const fetchAllCourses = () => {
@@ -103,67 +207,81 @@ export default function Dashboard(){
         .catch((err) => console.error("Error fetching courses:", err));
     }
 
-    // Fetch ONLY Bookmarked 
-    const fetchBookmarks = () => {
-        fetch("http://localhost:8000/api/bookmarked/")  // CHANGE LINK HERE (api bookmark)
-        .then((res) => res.json())
-        .then((data) => {
-            console.log('Bookmarked data:', data);
-            setCourses(data);
-            setViewMode('bookmarks');
-        })
-        .catch((err) => console.error("Error fetching bookmarked courses:", err));
-    }
+    const fetchCoursesBySkills = (skillList, level) => {
+            fetch(`${API_BASE}/courses/by-skills/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    skills: skillList,
+                    level: level,
+                }),
+            })
+                .then(res => res.json())
+                .then(data => {
+                    setCourses(data);
+                    setViewMode(null);
+                })
+                .catch(err => console.error("Error fetching by skills:", err));
+        };
     
+    useEffect(() => {
+      if (!selectedId) return;
+    
+      // Fetch IGP
+      fetch(`${API_BASE}/igp/?course__id=${selectedId}`)
+        .then(res => res.json())
+        .then(data => setIgpInfo(data))
+        .catch(err => console.error("Error fetching IGP:", err));
+    
+      // Fetch Pathways (Diploma → Degree)
+      fetch(`${API_BASE}/pathways/?diploma__id=${selectedId}`)
+        .then(res => res.json())
+        .then(data => setDegreePathways(data.map(p => p.degree)))
+        .catch(err => console.error("Error fetching Pathways:", err));
+    
+      // Fetch Careers (Course → Career)
+      fetch(`${API_BASE}/career-paths/?course__id=${selectedId}`)
+        .then(res => res.json())
+        .then(data => setCareerPaths(data.map(p => p.career)))
+        .catch(err => console.error("Error fetching Careers:", err));
+    }, [selectedId]);
+
+    const fetchBookmarks = async () => {
+    const data = await getBookMarkedCourses();
+    console.log("Bookmarked data:", data);
+    setCourses(data);
+    setViewMode("bookmarks");
+  }
+   
     
     {/* ======== BOOKMARK MANAGEMENT SYSTEM ======== */}
-    // UI Display System
+     // Bookmarked Management
     const toggleBookmarked = (isBookmark) => {
-        if (isBookmark)
-        {
-            // show bookmarked only
-            setViewMode("bookmarks");
-        }
-        else
-        {
-            // Show original
-            setViewMode(null);
-            window.location.reload();
-        }
-    }
+          if (isBookmark)
+          {
+              // show bookmarked only
+              setViewMode("bookmarks");
+          }
+          else
+          {
+              // Show original
+              setViewMode(null);
+              window.location.reload();
+          }
+      }
+    const handleBookMarkClick = async () => {
+      const success = await addBookmark(selectedId);
+      if (success) fetchBookmarks();
+    };
 
-    // Bookmarked Management
-    const [selectedId, setSelectedId] = useState(0); // A variable to fetch latest selected ID
+    const removeBookMark = async () => {
+      const success = await removeBookmark(selectedId);
+      if (success) fetchBookmarks();
+    };
+
     
-    // Add bookmark
-    const handleBookMarkClick = () => {
-        const isBookedMarked = isCourseBookedMarked(selectedId);
-
-        if (isBookedMarked) {
-            alert(`Course ID: ${selectedId} is already bookmarked!`);
-        }
-        else
-        {
-            addBookmark(selectedId);
-            alert(`Course ID: ${selectedId} successfully added to bookmarks!`)
-        }
-    }
-
-    // Remove bookmarked
-    const removeBookMark = () => {
-        const isBookedMarked = isCourseBookedMarked(selectedId);
-
-        if (isBookedMarked){
-            removeBookmark(selectedId);
-            alert(`Course ID: ${selectedCard} removed from bookmarks!`);
-        }
-        else
-        {
-            alert(`Course ID: ${selectedCard} is not in your bookmarks!`);
-        }
-    }
-
-
     // Grid Info
     const gridInfo = [
         {id: 1, header: "Elr2b2 type", data: "A"},
@@ -187,13 +305,7 @@ export default function Dashboard(){
 
 
 
-    {/* ======== Navigation Interactions ======== */} 
-    // Visitor or Logged In user 
-    const [searchParams] = useSearchParams();
-    const source = searchParams.get('source');
-    // check if coming from visitor
-    const forVisitor = source === 'visitor';
-    
+        
     // Selection Card display + Fetch selected ID
     const [selectedCard, setSelectedCard] = useState(null);
     const handleSelectedCard = (courseId) =>{
@@ -250,7 +362,7 @@ export default function Dashboard(){
     }
 
     // Toggle function
-    const [activeContent, setActiveContent] = useState("original");
+    
     const toggleContentClick = (contentClicked) => {
         switch (contentClicked){
             case "card":
@@ -276,7 +388,7 @@ export default function Dashboard(){
                 break;
         }
     };
-
+    
 
     {/* Frontend */}    
     return (
@@ -376,13 +488,17 @@ export default function Dashboard(){
                         
                             <h1 className="headerSide">Latest Info</h1>                            
                             <div id="gridContent">
-                                {gridInfo.map((info) => (
-                                    <GridCourseInfo
-                                        key={info.id}
-                                        header={info.header}
-                                        data={info.data}
-                                    />
-                                ))}
+                              {igpInfo.length > 0 ? (
+                                igpInfo.map((igp) => (
+                                  <GridCourseInfo
+                                    key={igp.id}
+                                    header={`${igp.qualification.toUpperCase()} (${igp.grade_type})`}
+                                    data={igp.indicative_grade}
+                                  />
+                                ))
+                              ) : (
+                                <p>No IGP data available.</p>
+                              )}
                             </div>
                         </div>
 
@@ -395,14 +511,17 @@ export default function Dashboard(){
                                 <div className="coursesContainer">
                                     <div className="outerBorder">
                                         <h3>Degree Courses</h3>
-
                                         <div className="theList">
-                                            {degreeCourses.map((dgre) =>(
-                                                <CourseRoadMapList
-                                                    key={dgre.id}
-                                                    itemName={dgre.itemName}
-                                                />
-                                            ))}
+                                          {degreePathways.length > 0 ? (
+                                            degreePathways.map((d) => (
+                                              <CourseRoadMapList
+                                                key={d.id}
+                                                itemName={cleanCourseName(d.course_name)}
+                                              />
+                                            ))
+                                          ) : (
+                                            <p>No linked degree pathways found.</p>
+                                          )}
                                         </div>
                                     </div>
                                 </div>
@@ -413,12 +532,13 @@ export default function Dashboard(){
                                         <h3>Careers</h3>
 
                                             <div className="theList">
-                                            {careers.map((career) =>(
-                                                <CourseRoadMapList
-                                                    key={career.id}
-                                                    itemName={career.itemName}
-                                                />
-                                            ))}
+                                              {careerPaths.length > 0 ? (
+                                                careerPaths.map((career) => (
+                                                  <CourseRoadMapList key={career.id} itemName={career.name} />
+                                                ))
+                                              ) : (
+                                                <p>No career data available.</p>
+                                              )}
                                         </div>
                                     </div>
                                 </div>                            
@@ -442,7 +562,9 @@ export default function Dashboard(){
                             </div>   
 
                             <div id="compareBtn">
-                                <Link to="/comparePage"><button disabled={isDisabled}>COMPARE!</button></Link>                                
+                              <Link to={`/comparePage?courseIds=${selectedCourses.join(",")}`}>
+                                <button disabled={isDisabled}>COMPARE!</button>
+                              </Link>
                             </div>
                         </div>
                     </div>

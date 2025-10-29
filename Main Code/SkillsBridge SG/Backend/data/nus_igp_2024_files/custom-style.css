@@ -1,0 +1,80 @@
+﻿.nus-merit-scholarship__right > h2 {
+    padding-left: 12px !important
+}
+
+.nus-merit-scholarship__right > p {
+    padding-left: 12px !important
+}
+
+
+.nus-merit-scholarship__left .sidebar-list .accordion .accordion-collapse .accordion-body ul li.active {
+    background-color: #dbe6ff;
+}
+
+.nus-merit-scholarship__left .sidebar-list .accordion .accordion-button.no-child::after {
+    content: "" !important;
+}
+
+.homepage-banner-section iframe video {
+    object-fit: cover;
+    width: 100%
+}
+
+.events-swiper-section .events-swiper__link span {
+    text-align: center;
+    color: #000;
+    padding-top: 21px;
+    padding-bottom: 23px;
+    text-decoration: none;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+
+.events-swiper-section .events-swiper__link span:after {
+    content: url(../images/readmore-icon.png);
+    margin-left: 5px;
+}
+
+.nus-experience-section .nus-rating .center-column:last-child {
+    border-style: none;
+}
+
+.btn-orange-white {
+    background-color: #EF7C00 !important;
+    color: white !important;
+}
+
+.btn-orange-blue {
+    background-color: #EF7C00 !important;
+    color: #0D4C8E !important;
+}
+
+.btn-blue-white {
+    background-color: #0D4C8E !important;
+    color: white !important;
+}
+
+.btn-dark-blue-white {
+    background-color: #001053 !important;
+    color: white !important;
+}
+
+.btn-yellow-black {
+    background-color: #FFDF00 !important;
+    color: black !important;
+}
+
+.btn-black-white {
+    background-color: black !important;
+    color: white !important;
+}
+
+.btn-white-black {
+    background-color: white !important;
+    color: black !important;
+}
+
+.programmes-section .view{
+    cursor: default
+}

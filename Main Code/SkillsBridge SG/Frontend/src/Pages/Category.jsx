@@ -1,39 +1,94 @@
 import '../Pages/Category.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Skill from '../Components/Skill';
 import BackBar from '../Components/BackBar';
+import { useEffect, useState } from 'react';
 
+const API_BASE = "http://localhost:8000/api";
 
-const skillData = [
-    { icon: "⌨️", skillName: "Coding" },
-    { icon: "🎨", skillName: "Design" },
-    { icon: "🧪", skillName: "Science" },
-    { icon: "➗", skillName: "Mathematics" },
-    { icon: "✏️", skillName: "Graphic Design" },
-    { icon: "✒️", skillName: "Creative Writing" },
-    { icon: "📈", skillName: "Economics" },
-    { icon: "⏻", skillName: "Electronics" }
-];
 
 export default function Category() {
+    const [skills, setSkills] = useState([]);
+    const [selectedSkills, setSelectedSkills] = useState([]);
+    const [level, setLevel] = useState(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        fetch(`${API_BASE}/skills/`)
+            .then(res => res.json())
+            .then(data => {
+                const mapped = data.map(s => ({
+                    id: s.id,
+                    name: s.name,
+                    icon: assignIcon(s.name)
+                }));
+                setSkills(mapped);
+            })
+            .catch(err => console.error("Error fetching skills:", err));
+    }, []);
+
+    const assignIcon = (skillName) => {
+        if (skillName.toLowerCase().includes("code")) return "⌨️";
+        if (skillName.toLowerCase().includes("design")) return "🎨";
+        if (skillName.toLowerCase().includes("science")) return "🧪";
+        if (skillName.toLowerCase().includes("math")) return "➗";
+        return "📘"; // fallback icon
+    };
+
+    const toggleSkill = (skillName) => {
+        setSelectedSkills(prev => 
+            prev.includes(skillName) 
+            ? prev.filter(s => s !== skillName) 
+            : [...prev, skillName]
+        );
+    };
+
+    const handleConfirm = () => {
+        if (selectedSkills.length === 0) {
+            alert("Please select at least one skill!");
+            return;
+        }
+
+        navigate(`/dashboardPage?skills=${selectedSkills.join(",")}&level=${level}`);
+    };
+
     return (
         <div id="categoryPage">
-            
-            <BackBar to="/"/>
+            <BackBar to="/" />
 
             <div id="categoryPageWrapper">
                 <h1 id="categoryTitle">Select your skills</h1>
+
                 <div id="skillGrid">
-                    {skillData.map((d, idx) =>
-                        <Skill key={d.skillName} icon={d.icon} skillName={d.skillName} />
+                    {skills.map((s) =>
+                        <Skill 
+                            key={s.id} 
+                            icon={s.icon} 
+                            skillName={s.name}
+                            onClick={() => toggleSkill(s.name)}
+                            isSelected={selectedSkills.includes(s.name)}
+                        />
                     )}
                 </div>
+
                 <div id="degreeSelector">
-                    <button className="degreeBtn">Degree</button>
-                    <button className="degreeBtn">Diploma</button>
+                    <button 
+                        className={`degreeBtn ${level === "uni" ? "active" : ""}`} 
+                        onClick={() => setLevel("uni")}
+                    >
+                        Degree
+                    </button>
+                    <button 
+                        className={`degreeBtn ${level === "poly" ? "active" : ""}`} 
+                        onClick={() => setLevel("poly")}
+                    >
+                        Diploma
+                    </button>
                 </div>
-                    <Link to="/dashboardPage"><button>Confirm</button></Link>
+
+                <button onClick={handleConfirm}>Confirm</button>
             </div>
         </div>
     );
 }
+

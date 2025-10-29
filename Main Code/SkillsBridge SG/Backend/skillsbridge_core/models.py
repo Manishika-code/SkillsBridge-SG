@@ -32,7 +32,27 @@ class Course(models.Model):
 
     def __str__(self): return f"{self.course_name} ({self.institution})"
 
-# courses in skillsfuture (not sure if we need this)
+class CourseIGP(models.Model):
+
+    QUALIFICATIONS = [
+        ("alevel", "A-Level"),
+        ("poly", "Polytechnic"),
+        ("olevel", "O-Level"),
+    ]
+    qualification = models.CharField(max_length=10, choices=QUALIFICATIONS)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    indicative_grade = models.CharField(max_length=50)
+    grade_type = models.CharField(max_length=50) #rp, gpa or o level grade
+    source_url = models.URLField(blank=True, null = True)
+    placements = models.CharField(max_length=10, blank=True, null = True)
+
+    def __str__(self):
+        return f"{self.course.course_name} | {self.grade_type}: {self.indicative_grade}"
+
+    class Meta:
+        unique_together = ("course", "qualification")
+        ordering = ["qualification"]
+
 class CourseSkill(models.Model):
     course    = models.ForeignKey(Course, on_delete=models.CASCADE)
     skill     = models.ForeignKey(Skill, on_delete=models.CASCADE)
@@ -80,10 +100,64 @@ class SavedPlanNode(models.Model):
     ref_id   = models.CharField(max_length=36)
     order_idx= models.IntegerField()
 
-# tba
-class Glossary(models.Model):
-    key   = models.CharField(primary_key=True, max_length=128)
-    value = models.TextField()
+#bookmarked courses 
+class Bookmark(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bookmarks")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="bookmarked_by")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'course') # ensures we have no dupes
+
+    def __str__(self):
+        return f"{self.user.username} bookmarked {self.course.course_name}"
+    
+class DiplomaToDegree(models.Model):
+    id = models.CharField(primary_key=True, max_length=36, default=uid, editable=False)
+    diploma = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name="degree_pathways",
+        limit_choices_to={"level": "poly"}
+    )
+    degree = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name="diploma_sources",
+        limit_choices_to={"level": "uni"}
+    )
+    relevance_score = models.FloatField(default=1.0)  
+    notes = models.TextField(blank=True, null=True)  
+
+    class Meta:
+        unique_together = ("diploma", "degree")
+
+    def __str__(self):
+        return f"{self.diploma.course_name} → {self.degree.course_name}"
+
+class Career(models.Model):
+    id = models.CharField(primary_key=True, max_length=36, default=uid, editable=False)
+    name = models.CharField(max_length=128, unique=True)
+    description = models.TextField(blank=True, null=True)
+    skills = models.ManyToManyField(Skill, blank=True)
+    industry = models.ForeignKey(
+        "Industry", null=True, blank=True, on_delete=models.SET_NULL, related_name="careers"
+    )
+
+    def __str__(self):
+        return self.name
+
+class CourseCareer(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="career_paths")
+    career = models.ForeignKey(Career, on_delete=models.CASCADE, related_name="course_links")
+    relevance_score = models.FloatField(default=1.0)
+    notes = models.TextField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ("course", "career")
+
+    def __str__(self):
+        return f"{self.course.course_name} → {self.career.name}"
 
 
 
