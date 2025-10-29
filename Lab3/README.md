@@ -7,4 +7,4 @@ Deliverables
 - System architecture
 - application skeleton
 
-The following is inside our SRS document
+The above deliverables are inside our SRS document
