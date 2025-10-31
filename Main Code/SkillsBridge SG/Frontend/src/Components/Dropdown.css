@@ -1,0 +1,38 @@
+.dropdown
+{
+    width: 250px;
+}
+
+.dropdown_header {
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dropdown_panel
+{
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 10px;
+    border-radius: 4px;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+}
+
+.dDitem
+{
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.dDitem:hover
+{
+    background-color: rgb(238, 238, 238);
+}

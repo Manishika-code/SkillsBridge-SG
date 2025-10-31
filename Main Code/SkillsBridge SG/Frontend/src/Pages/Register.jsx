@@ -1,5 +1,5 @@
 import '../Pages/Register.css';
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import BackBar from '../Components/BackBar';
 
@@ -12,6 +12,9 @@ export default function Register() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    const [searchParams] = useSearchParams();
+    const source = searchParams.get('source');
 
     const isFormValid =
         username.trim() !== '' &&
@@ -46,7 +49,7 @@ export default function Register() {
                 const data = await response.json();
                 console.log("Registered:", data);
                 alert("Registration successful! Please log in.");
-                navigate('/loginPage');
+                navigate(`/loginPage?source=${source}`);
             } else {
                 // failed validation
                 const errorData = await response.json();
@@ -70,7 +73,7 @@ export default function Register() {
     return (
         <div className="register-page">
             
-            <BackBar to="/loginPage"/>
+            <BackBar to={`/loginPage?source=${source}`}/>
 
             <div className="register-container">
                 <h1 className="register-title">SIGN UP</h1>

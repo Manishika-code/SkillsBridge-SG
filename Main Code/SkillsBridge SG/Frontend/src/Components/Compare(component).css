@@ -47,21 +47,3 @@
 /* Chips and bottom */
 .chips { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
 .chip { border:1px solid #ddd; border-radius:999px; padding:6px 10px; font-size:13px; background:#fff; }
-
-.cardbottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 14px;
-  margin-top: 8px;
-}
-
-.cardbottom .courseType {
-  border: 1px solid #111; border-radius: 999px; padding: 6px 12px; font-size: 14px;
-}
-
-.cardbottom button {
-  padding: 12px 16px; font-size: 15px; background:#111; color:#fff;
-  border:none; border-radius:12px; font-weight:700; cursor:pointer;
-}
-

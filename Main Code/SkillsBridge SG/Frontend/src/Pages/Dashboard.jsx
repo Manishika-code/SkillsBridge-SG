@@ -6,6 +6,7 @@ import '../Pages/Dashboard.css';
 import CourseCard from '../Components/CourseCard';
 import GridCourseInfo from '../Components/CourseInfoGrid';
 import CourseRoadMapList from '../Components/CourseRoadMapList';
+import Dropdown from "../Components/Dropdown";
 
 // Icons Used
 import { FiArrowLeftCircle } from "react-icons/fi";
@@ -304,6 +305,10 @@ export default function Dashboard(){
     ]
 
 
+    // Direct user to website function
+    const directToWebsite = (courseId) =>{
+      console.log("Direct to: ", courseId, "Website link");
+    }
 
         
     // Selection Card display + Fetch selected ID
@@ -397,7 +402,7 @@ export default function Dashboard(){
                 <div id="topPanel">
                     <div>
                         {viewMode === null && (
-                            <Link to="/"><div className='backBtn'><FiArrowLeftCircle size={40} /></div></Link>               
+                            <Link to={!forVisitor ? `/categoryPage?source=${source}` : "/"}><div className='backBtn'><FiArrowLeftCircle size={40} /></div></Link>               
                         )}
 
                         {viewMode === "bookmarks" && (
@@ -416,6 +421,36 @@ export default function Dashboard(){
                     </div>
 
                     <div className="filterBar">
+                        <div className="filtersSection">
+                          {/* Dropdown for polytechnics */}
+                          <Dropdown 
+                            options={[
+                              {value: 'all', label:'-- All --'},
+                              {value: 'np', label:'Ngee Ann Poly'},
+                              {value: 'nyp', label:'Nanyang Poly'},
+                              {value: 'sp', label:'Singapore Poly'},
+                              {value: 'tp', label:'Temasek Poly'},
+                              {value: 'rp', label:'Republic Poly'}
+                            ]}
+                            placeholder='Polytechnics'
+                            onDropdownSelect={(option) => console.log("Selected", option)}
+                          />
+
+                          {/* Dropdown for universities*/}
+                          <Dropdown 
+                            options={[
+                              {value: 'all', label:'-- All --'},
+                              {value: 'nus', label:'NUS'},
+                              {value: 'ntu', label:'NTU'},
+                              {value: 'smu', label:'SMU'},
+                              {value: 'sit', label:'SIT'},
+                              {value: 'sutd/suss', label:'SUTD / SUSS'}
+                            ]}
+                            placeholder='Universities'
+                            onDropdownSelect={(option) => console.log("Selected", option)}
+                          />
+                          
+                        </div>
 
                     </div>
                 </div>
@@ -469,86 +504,86 @@ export default function Dashboard(){
                 )}
                 
                 {activeContent === "MoreInfo" && (
-                    <div id="afterSelect">
-                        <div id="latestInfo">
-                            <div id="topBar">
-                                <button className='cancelBtn' onClick={() => toggleContentClick("ExitToOriginal")}><MdCancel size={40}/></button>
-                                
-                                {/* Show only for login user */}
-                                {!forVisitor && viewMode == null && (
-                                    <button className='bookmarkBtn' onClick={() => handleBookMarkClick()}><FaRegBookmark size={35}/></button>
-                                )}
+                  <div id="afterSelect">
+                    <div id="latestInfo">
+                        <div id="topBar">
+                            <button className='cancelBtn' onClick={() => toggleContentClick("ExitToOriginal")}><MdCancel size={40}/></button>
+                            
+                            {/* Show only for login user */}
+                            {!forVisitor && viewMode == null && (
+                                <button className='bookmarkBtn' onClick={() => handleBookMarkClick()}><FaRegBookmark size={35}/></button>
+                            )}
 
-                                {/* Show when in bookedmark page */}
-                                {viewMode === "bookmarks" && (
-                                    <button className='bookmarkBtn' onClick={() => removeBookMark()}><FaBookmark size={35}/></button>
-                                )}
+                            {/* Show when in bookedmark page */}
+                            {viewMode === "bookmarks" && (
+                                <button className='bookmarkBtn' onClick={() => removeBookMark()}><FaBookmark size={35}/></button>
+                            )}
 
-                            </div>
-                        
-                            <h1 className="headerSide">Latest Info</h1>                            
-                            <div id="gridContent">
-                              {igpInfo.length > 0 ? (
-                                igpInfo.map((igp) => (
-                                  <GridCourseInfo
-                                    key={igp.id}
-                                    header={`${igp.qualification.toUpperCase()} (${igp.grade_type})`}
-                                    data={igp.indicative_grade}
-                                  />
-                                ))
-                              ) : (
-                                <p>No IGP data available.</p>
-                              )}
-                            </div>
                         </div>
+                    
+                        <h1 className="headerSide">Latest Info</h1>                            
+                        <div id="gridContent">
+                          {igpInfo.length > 0 ? (
+                            igpInfo.map((igp) => (
+                              <GridCourseInfo
+                                key={igp.id}
+                                header={`${igp.qualification.toUpperCase()} (${igp.grade_type})`}
+                                data={igp.indicative_grade}
+                              />
+                            ))
+                          ) : (
+                            <p>-- No IGP data available --</p>
+                          )}
+                        </div>
+                    </div>
 
-                        <div id="roadMap">
-                            <h1 className="headerSide">Road Map</h1>  
-                            <p>Recommended path outline in the future</p>
+                    <div id="roadMap">
+                        <h1 className="headerSide">Road Map</h1>  
+                        <p>Recommended path outline in the future</p>
 
-                            <div id="mapContainer">
-                                {/* Applicable for Poly only */}
-                                <div className="coursesContainer">
-                                    <div className="outerBorder">
-                                        <h3>Degree Courses</h3>
-                                        <div className="theList">
-                                          {degreePathways.length > 0 ? (
-                                            degreePathways.map((d) => (
-                                              <CourseRoadMapList
-                                                key={d.id}
-                                                itemName={cleanCourseName(d.course_name)}
-                                              />
-                                            ))
-                                          ) : (
-                                            <p>No linked degree pathways found.</p>
-                                          )}
-                                        </div>
+                        <div id="mapContainer">
+                            {/* Applicable for Poly only */}
+                            <div className="coursesContainer">
+                                <div className="outerBorder">
+                                    <h3>Degree Courses</h3>
+                                    <div className="theList">
+                                      {degreePathways.length > 0 ? (
+                                        degreePathways.map((d) => (
+                                          <CourseRoadMapList
+                                            key={d.id}
+                                            itemName={cleanCourseName(d.course_name)}
+                                          />
+                                        ))
+                                      ) : (
+                                        <p>No linked degree pathways found.</p>
+                                      )}
                                     </div>
                                 </div>
+                            </div>
 
-                                {/* Applicable for All */}
-                                <div className="coursesContainer">
-                                    <div className="outerBorder">
-                                        <h3>Careers</h3>
+                            {/* Applicable for All */}
+                            <div className="coursesContainer">
+                                <div className="outerBorder">
+                                    <h3>Careers</h3>
 
-                                            <div className="theList">
-                                              {careerPaths.length > 0 ? (
-                                                careerPaths.map((career) => (
-                                                  <CourseRoadMapList key={career.id} itemName={career.name} />
-                                                ))
-                                              ) : (
-                                                <p>No career data available.</p>
-                                              )}
-                                        </div>
+                                        <div className="theList">
+                                          {careerPaths.length > 0 ? (
+                                            careerPaths.map((career) => (
+                                              <CourseRoadMapList key={career.id} itemName={career.name} />
+                                            ))
+                                          ) : (
+                                            <p>No career data available.</p>
+                                          )}
                                     </div>
-                                </div>                            
-                            </div> 
-                        </div>
+                                </div>
+                            </div>                            
+                        </div> 
+                    </div>
 
-                        <div id="moreSection">
-                            <button>Learn More</button>
-                        </div>
-                    </div>                   
+                    <div id="moreSection">
+                        <button onClick={() => directToWebsite(selectedId)}>Learn More</button>
+                    </div>
+                  </div>                   
                 )}
 
                 {activeContent === "compareUI" &&(
@@ -562,7 +597,7 @@ export default function Dashboard(){
                             </div>   
 
                             <div id="compareBtn">
-                              <Link to={`/comparePage?courseIds=${selectedCourses.join(",")}`}>
+                              <Link to={`/comparePage?courseIds=${selectedCourses.join(",")}&source=${source}`}>
                                 <button disabled={isDisabled}>COMPARE!</button>
                               </Link>
                             </div>

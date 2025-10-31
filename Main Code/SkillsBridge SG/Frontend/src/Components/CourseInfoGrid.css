@@ -19,13 +19,13 @@
 #gridContainer h2
 {
     font-weight: lighter;
-    font-size: 20px;
+    font-size: 15px;
     text-transform: uppercase;
     text-decoration: underline;
 }
 
 #gridContainer h1
 {
-    font-size: 40px;
+    font-size: 30px;
     white-space: nowrap;
 }

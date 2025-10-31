@@ -1,5 +1,5 @@
 import '../Pages/Category.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import Skill from '../Components/Skill';
 import BackBar from '../Components/BackBar';
 import { useEffect, useState } from 'react';
@@ -12,6 +12,11 @@ export default function Category() {
     const [selectedSkills, setSelectedSkills] = useState([]);
     const [level, setLevel] = useState(null);
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+
+    const source = searchParams.get('source');
+
+    console.log(source);
 
     useEffect(() => {
         fetch(`${API_BASE}/skills/`)
@@ -49,7 +54,7 @@ export default function Category() {
             return;
         }
 
-        navigate(`/dashboardPage?skills=${selectedSkills.join(",")}&level=${level}`);
+        navigate(`/dashboardPage?skills=${selectedSkills.join(",")}&level=${level}&source=${source}`);
     };
 
     return (

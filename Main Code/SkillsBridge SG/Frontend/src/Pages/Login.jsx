@@ -1,5 +1,5 @@
 import '../Pages/Login.css';
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import BackBar from '../Components/BackBar';
 
@@ -10,7 +10,9 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
 
+    const source = searchParams.get('source');
     const handleUsernameChange = (e) => setUsername(e.target.value);
     const handlePasswordChange = (e) => setPassword(e.target.value);
 
@@ -53,7 +55,7 @@ export default function Login() {
                 localStorage.setItem("user", JSON.stringify(userData));
             }
 
-            navigate("/categoryPage");
+            navigate(`/categoryPage?source=${source}`);
 
         } catch (err) {
             console.error("Login error:", err);
@@ -111,7 +113,7 @@ export default function Login() {
                     </button>
 
                     <p className="signup-text">
-                        Don’t have an account? <Link to="/registerPage">Sign up!</Link>
+                        Don’t have an account? <Link to={`/registerPage?source=${source}`}>Sign up!</Link>
                     </p>
                 </form>
             </div>

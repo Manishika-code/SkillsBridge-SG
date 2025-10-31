@@ -226,12 +226,6 @@ const CourseCard = (course) => {
             )}
           </section>
         )}
-
-        {/* Bottom */}
-        <div className="cardbottom">
-          <div className="courseType">{courseType}</div>
-          <button>Show More</button>
-        </div>
       </div>
     </div>
   );
