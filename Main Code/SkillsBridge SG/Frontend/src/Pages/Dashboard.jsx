@@ -184,15 +184,16 @@ export default function Dashboard(){
     const forVisitor = source === 'visitor';
 
     useEffect(() => {
-      const skillsParam = searchParams.get("skills");
-      const levelParam = searchParams.get("level");
-
-      if (skillsParam) {
-        const skillList = skillsParam.split(",");
-        fetchCoursesBySkills(skillList, levelParam);
+      const savedSkills = JSON.parse(localStorage.getItem("selectedSkills") || "[]");
+      const savedLevel = localStorage.getItem("selectedLevel");
+      
+      const finalSkills = skillsParam ? skillsParam.split(",") : savedSkills;
+      const finalLevel = levelParam || savedLevel;
+      
+      if (finalSkills.length > 0) {
+        fetchCoursesBySkills(finalSkills, finalLevel);
       } else {
         fetchAllCourses();
-
       }
     }, []);
 

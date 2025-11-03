@@ -53,7 +53,8 @@ export default function Category() {
             alert("Please select at least one skill!");
             return;
         }
-
+        localStorage.setItem("selectedSkills", JSON.stringify(selectedSkills));
+        localStorage.setItem("selectedLevel", level);
         navigate(`/dashboardPage?skills=${selectedSkills.join(",")}&level=${level}&source=${source}`);
     };
 

@@ -128,7 +128,7 @@ export default function Compare() {
   if (loading) {
     return (
       <div className="compare-container">
-        <BackBar to={`/dashboardPage?source=${source}`}/>
+        <BackBar to={`/dashboardPage?skills=${searchParams.get("skills") || ""}&level=${searchParams.get("level") || ""}&source=${source}`}/>
         <p style={{ textAlign: "center" }}>Loading comparison data...</p>
       </div>
     );
@@ -137,7 +137,7 @@ export default function Compare() {
   if (error) {
     return (
       <div className="compare-container">
-        <BackBar to={`/dashboardPage?source=${source}`}/>
+       <BackBar to={`/dashboardPage?skills=${searchParams.get("skills") || ""}&level=${searchParams.get("level") || ""}&source=${source}`}/>
         <p style={{ textAlign: "center", color: "red" }}>{error}</p>
       </div>
     );
@@ -146,7 +146,7 @@ export default function Compare() {
   if (courses.length === 0) {
     return (
       <div className="compare-container">
-        <BackBar to={`/dashboardPage?source=${source}`}/>
+       <BackBar to={`/dashboardPage?skills=${searchParams.get("skills") || ""}&level=${searchParams.get("level") || ""}&source=${source}`}/>
         <p style={{ textAlign: "center" }}>No comparison data available.</p>
       </div>
     );
@@ -154,8 +154,7 @@ export default function Compare() {
 
   return (
     <div className="compare-container">
-      <BackBar to={`/dashboardPage?source=${source}`}/>
-
+     <BackBar to={`/dashboardPage?skills=${searchParams.get("skills") || ""}&level=${searchParams.get("level") || ""}&source=${source}`}/>
       <div className="cardRow">
         {courses.map((course) => (
           <CourseCard
