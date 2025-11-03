@@ -1,5 +1,5 @@
 import { Link, useSearchParams } from "react-router-dom";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import '../Pages/Dashboard.css';
 
 // Referencing Components
@@ -172,6 +172,12 @@ export default function Dashboard(){
    const [igpInfo, setIgpInfo] = useState([]);
    const [degreePathways, setDegreePathways] = useState([]);
    const [careerPaths, setCareerPaths] = useState([]);
+   const [selectedPoly, setSelectedPoly] = useState("all");
+   const [selectedUni, setSelectedUni] = useState("all");
+
+
+   const [skillsList, setSkillsList] = useState([]);  
+   const [levelFilter, setLevelFilter] = useState(null);
 
     // Default fetch all
     const skillsParam = searchParams.get("skills");
@@ -182,20 +188,68 @@ export default function Dashboard(){
     const source = searchParams.get('source');
     // check if coming from visitor
     const forVisitor = source === 'visitor';
+    const hasMounted = useRef(false);
 
     useEffect(() => {
+      const skillsParam = searchParams.get("skills");
+      const levelParam = searchParams.get("level");
+
       const savedSkills = JSON.parse(localStorage.getItem("selectedSkills") || "[]");
       const savedLevel = localStorage.getItem("selectedLevel");
-      
+
       const finalSkills = skillsParam ? skillsParam.split(",") : savedSkills;
       const finalLevel = levelParam || savedLevel;
-      
+
+      // store these in state for reuse
+      setSkillsList(finalSkills);
+      setLevelFilter(finalLevel);
+
+      // initial fetch
       if (finalSkills.length > 0) {
         fetchCoursesBySkills(finalSkills, finalLevel);
       } else {
         fetchAllCourses();
       }
+    hasMounted.current = true;
     }, []);
+
+    useEffect(() => {
+      if (!hasMounted.current) return;
+    
+      if (selectedPoly === "all" && selectedUni === "all") {
+        if (skillsList.length > 0) {
+          fetchCoursesBySkills(skillsList, levelFilter);
+        } else {
+        return;
+
+        
+        }
+        return;
+      }
+    
+      if (selectedPoly !== "all") {
+        const provider = selectedPoly;
+        const level = "poly";
+        if (skillsList.length > 0) {
+          fetchCoursesBySkillsAndProvider(skillsList, level, provider);
+        } else {
+          fetchCoursesByFilter(provider, level);
+        }
+        return;
+      }
+    
+      // if university selected
+      if (selectedUni !== "all") {
+        const provider = selectedUni;
+        const level = "uni";
+        if (skillsList.length > 0) {
+          fetchCoursesBySkillsAndProvider(skillsList, level, provider);
+        } else {
+          fetchCoursesByFilter(provider, level);
+        }
+      }
+    }, [selectedPoly, selectedUni, skillsList, levelFilter]);
+    
 
 
     // Fetch ALL
@@ -227,6 +281,34 @@ export default function Dashboard(){
                 })
                 .catch(err => console.error("Error fetching by skills:", err));
         };
+
+    const fetchCoursesByFilter = (provider, level) => {
+      fetch(`${API_BASE}/courses/?institution=${encodeURIComponent(provider)}&level=${level}`)
+        .then(res => res.json())
+        .then(data => {
+          setCourses(data);
+          setViewMode(null);
+        })
+        .catch(err => console.error("Error filtering courses:", err));
+    };
+
+    const fetchCoursesBySkillsAndProvider = (skillList, level, provider) => {
+      fetch(`${API_BASE}/courses/by-skills/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          skills: skillList,
+          level: level,
+          provider: provider
+        }),
+      })
+        .then(res => res.json())
+        .then(data => {
+          setCourses(data);
+          setViewMode(null);
+        })
+        .catch(err => console.error("Error filtering by skills + provider:", err));
+    };
     
     useEffect(() => {
       if (!selectedId) return;
@@ -433,28 +515,30 @@ export default function Dashboard(){
                           <Dropdown 
                             options={[
                               {value: 'all', label:'-- All --'},
-                              {value: 'np', label:'Ngee Ann Poly'},
-                              {value: 'nyp', label:'Nanyang Poly'},
-                              {value: 'sp', label:'Singapore Poly'},
-                              {value: 'tp', label:'Temasek Poly'},
-                              {value: 'rp', label:'Republic Poly'}
+                              {value: 'Ngee Ann Polytechnic', label:'Ngee Ann Poly'},
+                              {value: 'Nanyang Polytechnic', label:'Nanyang Poly'},
+                              {value: 'Singapore Polytechnic', label:'Singapore Poly'},
+                              {value: 'Temesek Polytechnic', label:'Temasek Poly'},
+                              {value: 'Republic Polytechnic', label:'Republic Poly'}
                             ]}
                             placeholder='Polytechnics'
-                            onDropdownSelect={(option) => console.log("Selected", option)}
+                            defaultValue={{ value: "all", label: "-- All --" }}
+                            onDropdownSelect={(option) => setSelectedPoly(option.value)}
                           />
 
                           {/* Dropdown for universities*/}
                           <Dropdown 
                             options={[
                               {value: 'all', label:'-- All --'},
-                              {value: 'nus', label:'NUS'},
-                              {value: 'ntu', label:'NTU'},
-                              {value: 'smu', label:'SMU'},
-                              {value: 'sit', label:'SIT'},
-                              {value: 'sutd/suss', label:'SUTD / SUSS'}
+                              {value: 'National University of Singapore', label:'NUS'},
+                              {value: 'Nanyang Technological University', label:'NTU'},
+                              {value: 'Singapore Management University', label:'SMU'},
+                              {value: 'Singapore Institute of Technology', label:'SIT'},
+                              {value: 'Singapore University of Social Sciences', label:'SUTD / SUSS'}
                             ]}
                             placeholder='Universities'
-                            onDropdownSelect={(option) => console.log("Selected", option)}
+                            defaultvalue={{ value: "all", label: "-- All --" }}
+                            onDropdownSelect={(option) => setSelectedUni(option.value)}
                           />
                           
                         </div>

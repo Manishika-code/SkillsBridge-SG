@@ -1,7 +1,15 @@
 import './Home.css';
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function Home() {
+  useEffect(() => {
+    // 🧹 Clear saved selections when visiting Home
+    localStorage.removeItem("selectedSkills");
+    localStorage.removeItem("selectedLevel");
+  
+    console.log("Cleared stored skills and level on Home load");
+  }, []);
   return (
     <div id="homeContainer">
       {/* top bar */}
