@@ -308,7 +308,13 @@ export default function Dashboard(){
 
     // Direct user to website function
     const directToWebsite = (courseId) =>{
-      console.log("Direct to: ", courseId, "Website link");
+     const course = courses.find(c => c.id === courseId);
+
+     if (course && course.url) {
+       window.open(course.url, "_blank"); 
+     } else {
+       alert("No website link available for this course.");
+  }
     }
 
         
