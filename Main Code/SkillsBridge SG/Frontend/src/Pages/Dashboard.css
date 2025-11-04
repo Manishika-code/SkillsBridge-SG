@@ -77,6 +77,17 @@
     box-sizing: border-box;
 }
 
+#cards .notFoundMsg
+{
+    text-align: center;
+}
+
+#cards .notFoundContent
+{
+    font-style: italic;
+    font-size: 15px;
+}
+
 .compareBtn
 {
     position: fixed;

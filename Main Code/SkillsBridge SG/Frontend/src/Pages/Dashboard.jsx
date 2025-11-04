@@ -156,8 +156,7 @@ const removeBookmark = async (courseId) => {
 //     localStorage.setItem('BookmarkedCourses', JSON.stringify(update)); // adding all & replace current list, to exclude the one to remove
 //     return true;
 // }
-// 
-// 
+
 
 {/* Main Dashboard Code */}
 export default function Dashboard(){ 
@@ -182,6 +181,7 @@ export default function Dashboard(){
     // Default fetch all
     const skillsParam = searchParams.get("skills");
     const levelParam = searchParams.get("level");
+    const [globalSavedLvl, setSavedLevel] = useState(null);
 
     {/* ======== Navigation Interactions ======== */} 
     // Visitor or Logged In user 
@@ -191,11 +191,10 @@ export default function Dashboard(){
     const hasMounted = useRef(false);
 
     useEffect(() => {
-      const skillsParam = searchParams.get("skills");
-      const levelParam = searchParams.get("level");
-
       const savedSkills = JSON.parse(localStorage.getItem("selectedSkills") || "[]");
       const savedLevel = localStorage.getItem("selectedLevel");
+
+      setSavedLevel(savedLevel);
 
       const finalSkills = skillsParam ? skillsParam.split(",") : savedSkills;
       const finalLevel = levelParam || savedLevel;
@@ -213,21 +212,32 @@ export default function Dashboard(){
     hasMounted.current = true;
     }, []);
 
+    
     useEffect(() => {
       if (!hasMounted.current) return;
     
-      if (selectedPoly === "all" && selectedUni === "all") {
-        if (skillsList.length > 0) {
-          fetchCoursesBySkills(skillsList, levelFilter);
-        } else {
-        return;
-
-        
+      if (!forVisitor)
+      {
+        if (selectedPoly === "all" && selectedUni === "all") {
+          if (skillsList.length > 0) {
+            fetchCoursesBySkills(skillsList, levelFilter);
+          } 
+          else {
+            return;     
+          }
         }
-        return;
+      }
+      else
+      {
+        if (selectedPoly === "all" && selectedUni === "all") {
+          fetchAllCourses();
+        }
       }
     
-      if (selectedPoly !== "all") {
+      // if poly selected
+      if (selectedPoly !== "all") {     
+        toggleContentClick("ExitToOriginal");
+
         const provider = selectedPoly;
         const level = "poly";
         if (skillsList.length > 0) {
@@ -240,6 +250,8 @@ export default function Dashboard(){
     
       // if university selected
       if (selectedUni !== "all") {
+        toggleContentClick("ExitToOriginal");
+
         const provider = selectedUni;
         const level = "uni";
         if (skillsList.length > 0) {
@@ -248,6 +260,7 @@ export default function Dashboard(){
           fetchCoursesByFilter(provider, level);
         }
       }
+
     }, [selectedPoly, selectedUni, skillsList, levelFilter]);
     
 
@@ -259,6 +272,7 @@ export default function Dashboard(){
         .then((data) => {
             setCourses(data);
             setViewMode(null);
+            
     })
         .catch((err) => console.error("Error fetching courses:", err));
     }
@@ -361,32 +375,10 @@ export default function Dashboard(){
     };
 
     const removeBookMark = async () => {
+      toggleContentClick("ExitToOriginal");
       const success = await removeBookmark(selectedId);
       if (success) fetchBookmarks();
     };
-
-    
-    // Grid Info
-    const gridInfo = [
-        {id: 1, header: "Elr2b2 type", data: "A"},
-        {id: 2, header: "Elr2b2", data: "4 to 11"},
-        {id: 3, header: "Planned Intake", data: "150"},
-    ]
-
-    // RoadMap List (Degree)
-    const degreeCourses = [
-        {id: 1, itemName:"Accountancy"},
-        {id: 2, itemName:"Business and Computing"},
-        {id: 3, itemName:"Business (3-yr direct Honours Programme)"},
-    ]
-
-    // RoadMap List (Careers)
-    const careers = [
-        {id: 1, itemName:"Business Analyst"},
-        {id: 2, itemName:"Accountant"},
-        {id: 3, itemName:"Sales Analytics"},
-    ]
-
 
     // Direct user to website function
     const directToWebsite = (courseId) =>{
@@ -482,7 +474,10 @@ export default function Dashboard(){
                 break;
         }
     };
-    
+
+    //Filter UI display
+    const showPolyDropDown = forVisitor || (!forVisitor && globalSavedLvl === 'poly');
+    const showUniDropDown = forVisitor || (!forVisitor && globalSavedLvl === 'uni');
 
     {/* Frontend */}    
     return (
@@ -512,61 +507,84 @@ export default function Dashboard(){
                     <div className="filterBar">
                         <div className="filtersSection">
                           {/* Dropdown for polytechnics */}
-                          <Dropdown 
-                            options={[
-                              {value: 'all', label:'-- All --'},
-                              {value: 'Ngee Ann Polytechnic', label:'Ngee Ann Poly'},
-                              {value: 'Nanyang Polytechnic', label:'Nanyang Poly'},
-                              {value: 'Singapore Polytechnic', label:'Singapore Poly'},
-                              {value: 'Temesek Polytechnic', label:'Temasek Poly'},
-                              {value: 'Republic Polytechnic', label:'Republic Poly'}
-                            ]}
-                            placeholder='Polytechnics'
-                            defaultValue={{ value: "all", label: "-- All --" }}
-                            onDropdownSelect={(option) => setSelectedPoly(option.value)}
-                          />
+                          {(viewMode === null && showPolyDropDown) && (
+                            <Dropdown 
+                              options={[
+                                {value: 'all', label:'-- All --'},
+                                {value: 'Ngee Ann Polytechnic', label:'Ngee Ann Poly'},
+                                {value: 'Nanyang Polytechnic', label:'Nanyang Poly'},
+                                {value: 'Singapore Polytechnic', label:'Singapore Poly'},
+                                {value: 'Temasek Polytechnic', label:'Temasek Poly'},
+                                {value: 'Republic Polytechnic', label:'Republic Poly'}
+                              ]}
+                              placeholder='Polytechnics'
+                              defaultValue={{ value: "all", label: "-- All --" }}
+                              onDropdownSelect={(option) => setSelectedPoly(option.value)}
+                            />
+                          )}
 
                           {/* Dropdown for universities*/}
-                          <Dropdown 
-                            options={[
-                              {value: 'all', label:'-- All --'},
-                              {value: 'National University of Singapore', label:'NUS'},
-                              {value: 'Nanyang Technological University', label:'NTU'},
-                              {value: 'Singapore Management University', label:'SMU'},
-                              {value: 'Singapore Institute of Technology', label:'SIT'},
-                              {value: 'Singapore University of Social Sciences', label:'SUTD / SUSS'}
-                            ]}
-                            placeholder='Universities'
-                            defaultvalue={{ value: "all", label: "-- All --" }}
-                            onDropdownSelect={(option) => setSelectedUni(option.value)}
-                          />
-                          
+                          {(viewMode === null && showUniDropDown) && (
+                            <Dropdown 
+                              options={[
+                                {value: 'all', label:'-- All --'},
+                                {value: 'National University of Singapore', label:'NUS'},
+                                {value: 'Nanyang Technological University', label:'NTU'},
+                                {value: 'Singapore Management University', label:'SMU'},
+                                {value: 'Singapore Institute of Technology', label:'SIT'},
+                                {value: 'Singapore University of Social Sciences', label:'SUTD / SUSS'}
+                              ]}
+                              placeholder='Universities'
+                              defaultvalue={{ value: "all", label: "-- All --" }}
+                              onDropdownSelect={(option) => setSelectedUni(option.value)}
+                            />
+                          )}                          
                         </div>
 
                     </div>
                 </div>
 
                 <div id='cards'>
-                    {courses.map((course) => (
-                        <CourseCard 
-                        key={course.id}
-                        qualific={getQualific(course.level)}
-                        courseName={cleanCourseName(course.course_name)}
-                        institution={course.institution}
-                        schoolCtg={course.school}
-                        courseDesr={course.course_description}
-                        courseType="Full-Time"
+                  {(courses.length === 0 && viewMode !== "bookmarks") &&(
+                    <div className="notFoundMsg"> 
+                    --- We couldn't find any courses matching your criteria --- <br/><br/>                      
+                      <div className="notFoundContent"> 
+                        <strong>Skills:</strong> {Array.isArray(skillsList) ? skillsList.join(' | ') : skillsList} <br/>
+                        <strong>Institutions: </strong> 
+                        {[
+                          selectedPoly !== 'all' ? selectedPoly : null,
+                          selectedUni !== 'all' ? selectedUni : null
+                        ].filter(Boolean).join(' | ')}
+                      </div>
+                    </div>                        
+                  )}
+                  
+                  {(courses.length === 0 && viewMode === "bookmarks") && (
+                    <div className="notFoundMsg">
+                      --- No bookmarks added --- 
+                    </div>
+                  )}                  
 
-                        onCardClick={() => {toggleContentClick("card"); handleSelectedCard(course.id)}}
-                        
-                        isChecked={selectedCourses.includes(course.id)}
-                        onCheckboxChange={(checked) => handleCheckBox(course.id, checked)}
-                        
-                        isSelected={selectedCard === course.id}
-                        hasSelection={hasSelection}
-                        showToggleUI={showToggleUI}
-                        />
-                    ))}
+                  {courses.map((course) => (
+                      <CourseCard 
+                      key={course.id}
+                      qualific={getQualific(course.level)}
+                      courseName={cleanCourseName(course.course_name)}
+                      institution={course.institution}
+                      schoolCtg={course.school}
+                      courseDesr={course.course_description}
+                      courseType="Full-Time"
+
+                      onCardClick={() => {toggleContentClick("card"); handleSelectedCard(course.id)}}
+                      
+                      isChecked={selectedCourses.includes(course.id)}
+                      onCheckboxChange={(checked) => handleCheckBox(course.id, checked)}
+                      
+                      isSelected={selectedCard === course.id}
+                      hasSelection={hasSelection}
+                      showToggleUI={showToggleUI}
+                      />
+                  ))}
                 </div>
 
                 {activeContent === "original" && (

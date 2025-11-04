@@ -48,11 +48,18 @@ export default function Category() {
         );
     };
 
+    // validation check to ensure all necessary buttons are clicked
     const handleConfirm = () => {
         if (selectedSkills.length === 0) {
             alert("Please select at least one skill!");
             return;
         }
+        else if(level === null)
+        {
+            alert("Please select either Degree or Diploma!");
+            return;
+        }       
+
         localStorage.setItem("selectedSkills", JSON.stringify(selectedSkills));
         localStorage.setItem("selectedLevel", level);
         navigate(`/dashboardPage?skills=${selectedSkills.join(",")}&level=${level}&source=${source}`);

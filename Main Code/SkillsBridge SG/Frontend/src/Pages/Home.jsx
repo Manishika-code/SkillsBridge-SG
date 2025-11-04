@@ -4,12 +4,13 @@ import { useEffect } from "react";
 
 export default function Home() {
   useEffect(() => {
-    // 🧹 Clear saved selections when visiting Home
+    // Clear saved selections when visiting Home
     localStorage.removeItem("selectedSkills");
     localStorage.removeItem("selectedLevel");
   
     console.log("Cleared stored skills and level on Home load");
   }, []);
+  
   return (
     <div id="homeContainer">
       {/* top bar */}
@@ -30,32 +31,36 @@ export default function Home() {
 
       {/* how it works */}
       <section id="howItWorks">
-        <h3>HOW IT WORKS?</h3>
-
-        <div id="stepsRow">
-          <div className="step">
-            <div className="circle">1</div>
-            <p>Select your interests/skills<br />and qualifications</p>
+        <div id="content">
+          <div>
+            <h3>HOW IT WORKS?</h3>
           </div>
 
-          {/* four small bubbles between 1 and 2 */}
-          <div className="miniDots">
-            <span></span><span></span><span></span><span></span>
-          </div>
+          <div id="stepsRow">
+            <div className="step">
+              <div className="circle">1</div>
+              <p>Select your interests/skills<br />and qualifications</p>
+            </div>
 
-          <div className="step">
-            <div className="circle">2</div>
-            <p>View all suitable courses<br />with roadmaps and data</p>
-          </div>
+            {/* four small bubbles between 1 and 2 */}
+            <div className="miniDots">
+              <span></span><span></span><span></span><span></span>
+            </div>
 
-          {/* four small bubbles between 2 and 3 */}
-          <div className="miniDots">
-            <span></span><span></span><span></span><span></span>
-          </div>
+            <div className="step">
+              <div className="circle">2</div>
+              <p>View all suitable courses<br />with roadmaps and data</p>
+            </div>
 
-          <div className="step">
-            <div className="circle">3</div>
-            <p>Compare courses to pick<br />the most suitable one</p>
+            {/* four small bubbles between 2 and 3 */}
+            <div className="miniDots">
+              <span></span><span></span><span></span><span></span>
+            </div>
+
+            <div className="step">
+              <div className="circle">3</div>
+              <p>Compare courses to pick<br />the most suitable one</p>
+            </div>
           </div>
         </div>
       </section>
