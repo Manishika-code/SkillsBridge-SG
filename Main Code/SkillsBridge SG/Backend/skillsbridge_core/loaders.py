@@ -1,5 +1,5 @@
 from .utils.data_fetcher import fetch_all_records
-from .models import Course, CourseIGP
+from .models import Course, CourseIGP, CourseIntake, GESRecord
 import pdfplumber
 import requests
 from io import BytesIO
@@ -17,6 +17,9 @@ RESOURCE_ID_TP = "d_fd432802d65c2b23a8e235be777780f7"
 # parse in excel for this case
 RESOURCE_ID_RP = "d_410aa9ff5ce5617a0cbebe9092c4a2e0"
 RESOURCE_ID_GES = "d_3c55210de27fcccda2ed0c63fdd2b352"
+RESOURCE_ID_INTAKE_BY_INST = "d_437e089ba21c5221b0d42e3b2636b7f0"
+RESOURCE_ID_INTAKE_BY_COURSE_POLY = "d_6b264092cd066c55d8e2db9e68e7ffdb"
+RESOURCE_ID_INTAKE_BY_COURSE_UNI = "d_78a8224856234eafbbc44d3d3edacd19"
 
 NTU_IGP_URL = "https://www.ntu.edu.sg/docs/default-source/undergraduate-admissions/igp/ntu_igp.pdf?sfvrsn=5bf56f6c_1"
 
@@ -24,6 +27,140 @@ NTU_IGP_URL = "https://www.ntu.edu.sg/docs/default-source/undergraduate-admissio
 # is ALL CAPS for some reason)
 import re
 
+
+def load_intake_by_institution():
+    """
+    Load the past 5 years of student intake data by institution (gender-separated).
+    Populates CourseIntake records with only institution-level aggregation
+    (no course linkage).
+    """
+    print("📊 Loading intake by institution (gender-separated)...")
+
+    records = fetch_all_records("d_437e089ba21c5221b0d42e3b2636b7f0")
+
+    # Determine available years and select the most recent 5
+    years = sorted(
+        {int(r["year"]) for r in records if r.get("year") and r["year"].isdigit()},
+        reverse=True,
+    )
+    recent_years = years[:5]
+    print(f"📅 Importing last {len(recent_years)} years: {recent_years}")
+
+    # Institution mapping (dataset uses abbreviations like 'nus', 'ntu' columns)
+    inst_columns = {
+        "nus": "National University of Singapore",
+        "ntu": "Nanyang Technological University",
+        "smu": "Singapore Management University",
+        "sit": "Singapore Institute of Technology",
+        "sutd": "Singapore University of Technology and Design",
+        "suss": "Singapore University of Social Sciences",
+    }
+
+    # Build intermediate dictionary keyed by (year, institution)
+    data = {}
+    for rec in records:
+        year = rec.get("year")
+        if not year or not year.isdigit() or int(year) not in recent_years:
+            continue
+        year = int(year)
+        sex = rec.get("sex", "").strip().upper()  # 'MF' or 'F'
+        for key, inst_name in inst_columns.items():
+            val = rec.get(key)
+            if not val or not val.strip().isdigit():
+                continue
+            count = int(val.strip())
+            data.setdefault((year, inst_name), {})[sex] = count
+
+    imported = 0
+    for (year, inst_name), sexes in data.items():
+        total = sexes.get("MF", 0)
+        female = sexes.get("F", 0)
+        male = max(total - female, 0) if total else 0
+
+        # Create or update aggregate intake record
+        CourseIntake.objects.update_or_create(
+            course=None,  # no specific course link
+            institution=inst_name,  # ✅ store institution name
+            year=year,
+            defaults={
+                "total_intake": total,
+                "intl_pct": 0.0,  # not provided in dataset
+                "male_pct": (male / total * 100) if total else 0,
+                "female_pct": (female / total * 100) if total else 0,
+                "source_url": "https://data.gov.sg/dataset/student-intake-by-institution-and-sex",
+            },
+        )
+        imported += 1
+
+    print(f"✅ Imported {imported} institution-level intake entries successfully.")
+
+def load_intake_by_course(resource_id, level_label):
+    """
+    Load 5 years of course-level intake data (gender separated) from Data.gov.sg.
+    """
+    print(f"📊 Loading intake by course for {level_label.upper()} (last 5 years)...")
+
+    records = fetch_all_records(resource_id)
+
+    years = sorted({int(r["year"]) for r in records if r.get("year") and r["year"].isdigit()}, reverse=True)
+    recent_years = years[:5]
+    print(f"📅 Importing years: {recent_years}")
+
+    data = {}
+    for rec in records:
+        year = rec.get("year")
+        if not year or not year.isdigit() or int(year) not in recent_years:
+            continue
+        year = int(year)
+        sex = rec.get("sex", "").strip().upper()
+        course_raw = rec.get("course", "").strip()
+        if not course_raw:
+            continue
+        intake = rec.get("intake")
+        if not intake or not intake.strip().isdigit():
+            continue
+        intake = int(intake.strip())
+
+        data.setdefault((year, course_raw), {})[sex] = intake
+
+    imported, unmatched = 0, []
+
+    for (year, cname), sexes in data.items():
+        total = sexes.get("MF", 0)
+        female = sexes.get("F", 0)
+        male = max(total - female, 0) if total else 0
+
+        # Clean course name
+        course_name = (
+            format_polytechnic_course(cname) if level_label == "poly"
+            else format_degree_course(cname)
+        )
+
+        institution = (
+            "Various Polytechnics" if level_label == "poly"
+            else "Various Universities"
+        )
+        course = find_best_course_match(course_name, institution)
+        if not course:
+            unmatched.append(course_name)
+            continue
+
+        CourseIntake.objects.update_or_create(
+            course=course,
+            year=year,
+            defaults={
+                "total_intake": total,
+                "male_pct": (male / total * 100) if total else 0,
+                "female_pct": (female / total * 100) if total else 0,
+                "intl_pct": 0.0,
+            },
+        )
+        imported += 1
+
+    print(f"✅ Imported {imported} {level_label.upper()} course intake records successfully.")
+    if unmatched:
+        print(f"⚠️ Skipped {len(unmatched)} unmatched courses.")
+  
 def format_polytechnic_course(name: str) -> str:
     """
     Clean and format Polytechnic course names.
@@ -206,6 +343,65 @@ def load_dataset_rp():
             },
         )
 
+def load_ges_records():
+    """
+    Load the past 5 years of Graduate Employment Survey (GES) data
+    from Data.gov.sg and store per-year trends in GESRecord.
+    """
+    print("📊 Importing Graduate Employment Survey (GES) data...")
+
+    records = fetch_all_records(RESOURCE_ID_GES)
+
+    # Extract valid years and select last 5
+    years = sorted({int(rec["year"]) for rec in records if rec.get("year") and rec["year"].isdigit()}, reverse=True)
+    if not years:
+        print("⚠️ No valid GES year data found.")
+        return
+
+    recent_years = years[:5]
+    print(f"📅 Importing GES data for years: {recent_years}")
+
+    # Filter to recent years
+    records = [r for r in records if int(r.get("year", 0)) in recent_years]
+
+    imported, unmatched = 0, []
+
+    for rec in records:
+        course_name = format_degree_course(rec.get("degree", "").strip())
+        institution = rec.get("university", "").strip()
+        year = int(rec.get("year", 0))
+
+        if not course_name or not institution or not year:
+            continue
+
+        # Match to an existing Course (more robust)
+        course = find_best_course_match(course_name, institution)
+        if not course:
+            unmatched.append(course_name)
+            continue
+
+        # Extract stats safely
+        try:
+            emp_rate = float(rec.get("employment_rate_overall", 0)) or None
+            median_salary = float(rec.get("basic_monthly_median", 0)) or None
+        except (ValueError, TypeError):
+            emp_rate, median_salary = None, None
+
+        # Create/update GESRecord for this course/year
+        GESRecord.objects.update_or_create(
+            course=course,
+            year=year,
+            defaults={
+                "employment_rate": emp_rate,
+                "median_salary": median_salary,
+                "source_url": "https://data.gov.sg/dataset/graduate-employment-survey",
+            },
+        )
+        imported += 1
+
+    print(f"✅ Imported {imported} GES entries across {len(recent_years)} years.")
+    if unmatched:
+        print(f"⚠️ Skipped {len(unmatched)} unmatched courses.")
 
 def load_dataset_uni():
     records = fetch_all_records(RESOURCE_ID_GES)
@@ -294,6 +490,12 @@ def find_best_course_match(course_name, institution, threshold=88, top_n=3):
         "singapore management university": "SMU",
         "singapore institute of technology": "SIT",
         "singapore university of social sciences": "SUSS",
+        "ngee ann polytechnic": "NP",
+        "nanyang polytechnic": "NYP",
+        "singapore polytechnic": "SP",
+        "republic polytechnic": "RP",
+        "temasek polytechnic": "TP",
+        "various polytechnics": "POLY_GROUP",  
     }
 
     matched_inst = None
@@ -307,7 +509,20 @@ def find_best_course_match(course_name, institution, threshold=88, top_n=3):
         print(f"⚠️ Unknown institution '{institution}'. Skipping '{course_name}'.")
         return None
 
-    all_courses = Course.objects.filter(institution__icontains=matched_inst)
+    if matched_inst == "various polytechnics" or matched_inst == "POLY_GROUP":
+        poly_insts = [
+            "ngee ann polytechnic",
+            "nanyang polytechnic",
+            "singapore polytechnic",
+            "republic polytechnic",
+            "temasek polytechnic",
+        ]
+        all_courses = Course.objects.filter(
+            institution__in=[p.title() for p in poly_insts]
+        )
+    else:
+        all_courses = Course.objects.filter(institution__icontains=matched_inst)
+
     if not all_courses.exists():
         print(f"⚠️ No courses found for {matched_inst}.")
         return None
@@ -856,4 +1071,6 @@ def load_all():
     load_dataset_tp()
     load_dataset_rp()
     load_dataset_uni()
+    load_intake_by_institution()
+    load_ges_records()
 

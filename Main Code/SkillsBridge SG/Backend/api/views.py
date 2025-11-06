@@ -4,11 +4,11 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Sum, Count
 
-from skillsbridge_core.models import Course, Skill, Industry, SavedPlan, CourseSkill, Bookmark, DiplomaToDegree, Career, CourseCareer, CourseIGP
+from skillsbridge_core.models import Course, Skill, Industry, SavedPlan, CourseSkill, Bookmark, DiplomaToDegree, Career, CourseCareer, CourseIGP, CourseIntake, GESRecord
 from .serializers import (
     CourseSerializer, SkillSerializer, IndustrySerializer,
     SavedPlanSerializer, BookmarkSerializer, DiplomaToDegreeSerializer,
-    CareerSerializer, CourseCareerSerializer, CourseIGPSerializer
+    CareerSerializer, CourseCareerSerializer, CourseIGPSerializer, CourseIntakeSerializer, GESRecordSerializer
 )
 from skillsbridge_core.services import EvidenceService, IndustryService, CompareService
 
@@ -221,3 +221,22 @@ class CourseIGPViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
     filterset_fields = ["course__id", "qualification"]
     filter_backends = [DjangoFilterBackend]
+
+class CourseIntakeViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    /api/intake-by-institution/?institution=National University of Singapore
+    """
+    queryset = CourseIntake.objects.all()
+    serializer_class = CourseIntakeSerializer
+    permission_classes = [permissions.AllowAny]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["institution", "year"]
+
+class GESRecordViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    /api/ges/?course__id=<uuid>
+    """
+    queryset = GESRecord.objects.all().select_related("course")
+    serializer_class = GESRecordSerializer
+    permission_classes = [permissions.AllowAny]
+    filterset_fields = ["course__id"]

@@ -40,17 +40,19 @@ class CourseIGP(models.Model):
         ("olevel", "O-Level"),
     ]
     qualification = models.CharField(max_length=10, choices=QUALIFICATIONS)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True)
     indicative_grade = models.CharField(max_length=50)
     grade_type = models.CharField(max_length=50) #rp, gpa or o level grade
     source_url = models.URLField(blank=True, null = True)
     placements = models.CharField(max_length=10, blank=True, null = True)
+    year = models.IntegerField(null=True, blank=True)
+    institution = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f"{self.course.course_name} | {self.grade_type}: {self.indicative_grade}"
 
     class Meta:
-        unique_together = ("course", "qualification")
+        unique_together = ("course", "qualification", "year", "grade_type", "institution")
         ordering = ["qualification"]
 
 class CourseSkill(models.Model):
@@ -160,4 +162,23 @@ class CourseCareer(models.Model):
         return f"{self.course.course_name} → {self.career.name}"
 
 
+class CourseIntake(models.Model):
+    course = models.ForeignKey(Course, null=True, blank=True, on_delete=models.SET_NULL)
+    institution = models.CharField(max_length=255, null=True, blank=True)
+    year = models.IntegerField()
+    total_intake = models.IntegerField(null=True, blank=True)
+    male_pct = models.FloatField(null=True, blank=True)
+    female_pct = models.FloatField(null=True, blank=True)
+    intl_pct = models.FloatField(null=True, blank=True)
+    source_url = models.URLField(blank=True, null=True)
+
+class GESRecord(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    year = models.IntegerField()
+    employment_rate = models.FloatField(null=True, blank=True)
+    median_salary = models.FloatField(null=True, blank=True)
+    source_url = models.URLField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ("course", "year")
 

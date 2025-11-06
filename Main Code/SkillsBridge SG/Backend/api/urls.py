@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     CourseViewSet, SkillViewSet, IndustryViewSet,
     evidence, compare, SavedPlanViewSet, get_courses_by_skills, BookmarkViewSet, DiplomaToDegreeViewSet,
-    CareerViewSet, CourseCareerViewSet, CourseIGPViewSet
+    CareerViewSet, CourseCareerViewSet, CourseIGPViewSet, CourseIntakeViewSet, GESRecordViewSet
 )
 
 from .auth_views import register, me
@@ -20,6 +20,8 @@ router.register(r"pathways", DiplomaToDegreeViewSet, basename="pathways")
 router.register(r"careers", CareerViewSet)
 router.register(r"career-paths", CourseCareerViewSet)
 router.register(r"igp", CourseIGPViewSet, basename="igp")
+router.register(r"ges", GESRecordViewSet, basename="gesrecord")
+router.register(r"intake-by-institution", CourseIntakeViewSet, basename="intake-by-institution")
 
 urlpatterns = [
     path("courses/by-skills/", get_courses_by_skills, name="get_courses_by_skills"),
