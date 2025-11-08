@@ -7,17 +7,15 @@
     max-height: 400px;
     align-items: center;
     padding: 20px;
-    border: 1px solid #000000;
-    border-radius: 8px;
+    border-radius: 10px;
     background-color: #fff;
     color: #333;
-
     transition: 0.2s ease-in-out;
 }
 
 #cardContainer:hover
 {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 10px #2B263F4d;
     border: none;
 }
 
@@ -33,7 +31,7 @@
 
 .cardContent .unselected
 {
-    opacity: 0.4;
+    opacity: 0.3;
 }
 
 .cardContent .unselected .cardbottom button:hover
@@ -46,7 +44,7 @@
 
 .cardContent h1
 {
-    font-size: 30px;
+    font-size: 28px;
     margin: 0;
 }
 
@@ -111,7 +109,15 @@ input[type="checkbox"]
 
 .cardbottom button
 {
-    padding: 15px;
+    padding: 12px;
     font-size: 16px;
-    background-color: #666666;
+    background: #EBC66B;
+    color: black;
+    font-weight: bold;
+}
+
+
+.cardbottom button:hover
+{
+    background: #f1a33e;
 }

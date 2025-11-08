@@ -24,7 +24,7 @@ export default function Home() {
         <h1>Your Future Starts Here !</h1>
 
         <div id="buttonRow">
-          <Link to="/dashboardPage?source=visitor"><button>Visitor</button></Link>
+          <Link to="/dashboardPage?source=visitor"><button id='visitorBtn'>Visitor</button></Link>
           <Link to="/loginPage?source=login"><button>Login</button></Link>
         </div>
       </section>

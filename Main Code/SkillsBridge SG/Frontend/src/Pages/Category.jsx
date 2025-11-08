@@ -52,11 +52,13 @@ export default function Category() {
     const handleConfirm = () => {
         if (selectedSkills.length === 0) {
             alert("Please select at least one skill!");
+            window.scroll({ top: 0, left: 0, behavior: 'smooth' });
             return;
         }
         else if(level === null)
         {
             alert("Please select either Degree or Diploma!");
+            window.scroll({ top: 0, left: 0, behavior: 'smooth' });
             return;
         }       
 
@@ -70,19 +72,7 @@ export default function Category() {
             <BackBar to="/" />
 
             <div id="categoryPageWrapper">
-                <h1 id="categoryTitle">Select your skills</h1>
-
-                <div id="skillGrid">
-                    {skills.map((s) =>
-                        <Skill 
-                            key={s.id} 
-                            icon={s.icon} 
-                            skillName={s.name}
-                            onClick={() => toggleSkill(s.name)}
-                            isSelected={selectedSkills.includes(s.name)}
-                        />
-                    )}
-                </div>
+                <h1 id="categoryTitle">Choose Institution</h1>
 
                 <div id="degreeSelector">
                     <button 
@@ -99,7 +89,21 @@ export default function Category() {
                     </button>
                 </div>
 
-                <button onClick={handleConfirm}>Confirm</button>
+                <h1 id="categoryTitle">Select your skills</h1>
+                <div id="skillGrid">
+                    {skills.map((s) =>
+                        <Skill 
+                            key={s.id} 
+                            icon={s.icon} 
+                            skillName={s.name}
+                            onClick={() => toggleSkill(s.name)}
+                            isSelected={selectedSkills.includes(s.name)}
+                        />
+                    )}
+                </div>
+
+
+                <button onClick={handleConfirm} className="category_button">Confirm</button>
             </div>
         </div>
     );

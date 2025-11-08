@@ -71,45 +71,47 @@ export default function Login() {
 
                 <BackBar to="/"/>
 
-                <h1 className="login-title">LOG IN</h1>
+                <h1 className="login-title">LOGIN</h1>
 
                 <form className="login-form" onSubmit={handleLogin}>
-                    <label className="login-label" htmlFor="username">Username</label>
-                    <input
-                        type="text"
-                        id="username"
-                        className="login-input"
-                        value={username}
-                        onChange={handleUsernameChange}
-                        autoComplete="username"
-                    />
-
-                    <label className="login-label" htmlFor="password">Password</label>
-                    <div className="password-input-container">
+                    <div className="login-form fsd">
+                        <label className="login-label" htmlFor="username">Username</label>
                         <input
-                            type={showPassword ? "text" : "password"}
-                            id="password"
-                            className="login-input password-input"
-                            value={password}
-                            onChange={handlePasswordChange}
-                            autoComplete="current-password"
+                            type="text"
+                            id="username"
+                            className="login-input"
+                            value={username}
+                            onChange={handleUsernameChange}
+                            autoComplete="username"
                         />
-                        <span
-                            className="password-toggle-icon"
-                            onClick={() => setShowPassword(!showPassword)}
-                        >
-                            {showPassword ? '👁️' : '👁️‍🗨️'}
-                        </span>
-                    </div>
 
-                    {error && <p className="error-text">{error}</p>}
+                        <label className="login-label" htmlFor="password">Password</label>
+                        <div className="password-input-container">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                id="password"
+                                className="login-input password-input"
+                                value={password}
+                                onChange={handlePasswordChange}
+                                autoComplete="current-password"
+                            />
+                            <span
+                                className="password-toggle-icon"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? '👁️' : '👁️‍🗨️'}
+                            </span>
+                        </div>
+
+                        {error && <p className="error-text">{error}.</p>}
+                    </div>
 
                     <button
                         type="submit"
                         className="login-button"
                         disabled={!isFormValid || loading}
                     >
-                        {loading ? "Logging in..." : "Log in"}
+                        {loading ? "Logging in..." : "Log In"}
                     </button>
 
                     <p className="signup-text">

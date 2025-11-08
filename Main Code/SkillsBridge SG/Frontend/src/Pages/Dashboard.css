@@ -4,6 +4,7 @@
     position: relative;
     display: flex;
     justify-content: space-around;
+    background: #DFDBDC;
 }
 
 #topPanel 
@@ -17,7 +18,8 @@
     position: fixed;
     top: 0;
     z-index: 1;
-    background-color: white;
+    padding-top: 5px;
+    background-color: #2B263F;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -26,7 +28,7 @@
     position: fixed;
     top: 5%;
     left: 3%;
-    color: black;
+    color: rgb(255, 255, 255);
     transform: scale(1);
     transition: transform 0.2s ease-in-out;
 }
@@ -34,6 +36,11 @@
 #topPanel .backBtn:hover
 {
     transform: scale(1.1);
+}
+
+#topPanel h1
+{
+    color: white;
 }
 
 #dashboardContainer
@@ -92,7 +99,7 @@
 {
     position: fixed;
     bottom: 3%;
-    right: 40%;
+    right: 38%;
     z-index: 5;
 }
 
@@ -115,7 +122,7 @@
 
 #sideContainer
 {
-    background-color: #ded9d3;
+    background-color: #F0ECEB;
     position: sticky;
     top: 0;
     height: 100vh;
@@ -138,6 +145,20 @@
     top: 4%;
 }
 
+#myBookmarks button
+{
+    background: #EBC66B;
+    color: black;
+    border-radius: 9999px;  
+    padding: 15px 80px;
+    font-weight: bold;
+}
+
+#myBookmarks button:hover
+{
+    background: #f1a33e;
+}
+
 .infoDisplay
 {    
     display: flex;
@@ -149,8 +170,7 @@
 .infoDisplay h3
 {
     line-height: 2em;
-    font-weight: bold;
-    font-size: 25px;
+    font-size: 1.35em;
 }
 
 #afterSelect
@@ -190,6 +210,7 @@
 {
     position: absolute;
     right: 0;
+    top: 3%;
 }
 
 #afterSelect #latestInfo
@@ -199,8 +220,8 @@
 
 .headerSide
 {
-    font-size: 45px;
-    padding-top: 25px;
+    font-size: 2em;
+    padding-top: 50px;
 }
 
 #afterSelect #gridContent
@@ -244,7 +265,8 @@
 .coursesContainer .outerBorder
 {
     padding: 20px;
-    background-color: rgb(247, 247, 247);
+    background: #413E5B;
+    color: white;
     border-radius: 10px;
     text-align: left;
 }
@@ -272,6 +294,17 @@
     position: absolute;
     bottom: 3%;
     width: 85%;
+    background: #EBC66B;
+    color: black;
+    font-weight: bold;
+    font-size: 1.2em;  
+    border-radius: 9999px;  
+    padding: 15px 80px;
+}
+
+#moreSection button:hover
+{
+    background: #f1a33e;
 }
 
 #compare .cancelBtn
@@ -311,12 +344,24 @@
 
 #compareBtn button
 {
-    background-color: rgb(0, 100, 0);
+    background-color: #EBC66B;
+    color: black;
+    font-weight: bold;
+    font-size: 1.1em;
+    padding: 15px 80px;
+    border-radius: 9999px;
+}
+
+#compareBtn button:hover
+{
+    background: #f1a33e;
 }
 
 #compareBtn button:disabled
 {
     background-color: gray;
+    color: rgb(238, 238, 238);
+    font-weight: bold;
     cursor: not-allowed;
 }
 

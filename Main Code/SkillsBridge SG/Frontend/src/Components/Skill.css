@@ -2,40 +2,38 @@
     width: 290px;
     height: 120px;
     padding: 18px;
-    background-color: #fff;
+    border: 2px solid #c9c9c9;
+    background-color: #e9e7e7;
     border-radius: 17px;
     margin: 15px;
     display: flex;
     align-items: center;
-    box-shadow: 0 0 6px rgba(0,0,0,0.05);
+    box-shadow: 0 0 6px #2b263f2f;
     cursor: pointer;
-    border: none;
-    transition: box-shadow 0.2s;
+    transition: transform 0.2s ease-in-out;
 }
 
 .skillContainer:hover {
-    box-shadow: 0 5px 22px rgba(80,80,80,0.18);
+    box-shadow: 0 0 10px #2B263F4d;
 }
 
 .skillContent {
     display: flex;
     align-items: center;
-    gap: 15px;
 }
 
 .skillIcon {
     font-size: 42px;
-    margin-right: 4px;
 }
 
 .skillTitle {
     font-size: 1.35rem;
-    color: #181836;
     font-weight: bold;
 }
 
 .skillContainer.selected {
-    background-color: #d6eaff;      /* light blue highlight */
-    border: 2px solid #0077ff;
-    box-shadow: 0 0 10px rgba(0, 119, 255, 0.3);
+    background-color: #2B263F;
+    color: #ffffff;
+    box-shadow: 0 0 10px #2B263F4d;
+    transform: scale(1.05);
 }

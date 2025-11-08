@@ -76,7 +76,7 @@ export default function Register() {
             <BackBar to={`/loginPage?source=${source}`}/>
 
             <div className="register-container">
-                <h1 className="register-title">SIGN UP</h1>
+                <h1 className="register-title">REGISTER</h1>
 
                 <form className="register-form" onSubmit={handleSignUp}>
                     <label className="register-label" htmlFor="username">Username</label>
@@ -122,7 +122,7 @@ export default function Register() {
                         </span>
                     </div>
 
-                    {error && <p className="error-text">{error}</p>}
+                    {error && <p className="error-text">{error}.</p>}
 
                     <button
                         type="submit"

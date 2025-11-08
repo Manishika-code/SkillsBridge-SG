@@ -6,7 +6,8 @@
   width: 100%;
   height: 100vh;
   position: relative;
-  background: #f0f0f0;            /* single grey */
+  background: #2B263F;
+  color: white;
   align-items: center;
 }
 
@@ -17,7 +18,13 @@
   left: 0;
   top: 0;
 }
-#logoText{ font-weight: 800; font-size: 1.4rem; padding-left: 25px; }
+
+#logoText{ 
+  font-weight: 800; 
+  font-size: 1rem; 
+  padding-left: 25px; 
+  color: #b7acbd;
+}
 
 /* --- hero --- */
 #heroSection{
@@ -30,49 +37,64 @@
 #heroSection h2{
   font-family: 'Tahoma', 'Garamond';
   font-size: 2.8em;
+  letter-spacing: 3px;
 }
 
 #heroSection h1{
-  margin: 0;
+  margin: 40px;
   font-weight: 1000;
   font-family: "Dancing Script", cursive;
-  font-size: 45px;
+  font-size: 2em;
   line-height: 75px;
   letter-spacing: 0.1px;
 }
 
 #buttonRow{ 
-  margin-top: 100px; 
-
+  margin-top: 70px; 
 }
 
 #buttonRow a{ 
   text-decoration: none; 
 }
 #buttonRow button{
-  margin: 0 22px;
-  padding: 18px 48px;
+  margin: 0 50px;
+  padding: 15px 80px;
   border: none;
   border-radius: 9999px;
-  background: #000;
-  color: #fff;
+  background: #EBC66B;
+  color: #000000;
   font-weight: 700;
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   cursor: pointer;
 }
-#buttonRow button:hover{ filter: brightness(.9); }
+#buttonRow button:hover{ 
+  background: #f1a33e;
+}
+
+#buttonRow #visitorBtn
+{
+  background: #2B263F;
+  border: 2px solid white;
+  color: white;
+}
+
+#buttonRow #visitorBtn:hover
+{
+  background: #413E5B;
+}
 
 /* --- how it works --- */
 #howItWorks{
   width: 100%;
   height: 100%;
-  background: #d5d5d5;
+  background: #DFDBDC;
 }
 #howItWorks h3{
-  font-size: 40px;
-  font-weight: 400;
+  font-size: 30px;
+  font-weight: bold;
   text-decoration: underline;
   margin-bottom: 80px;
+  color: #332F40;
 }
 
 #howItWorks #content
@@ -106,10 +128,10 @@
   width: 68px;
   height: 68px;
   border-radius: 50%;
-  background: #9a9a9a;
-  color: #000000;
+  background: #332F40;
+  color: #ffffff;
   font-weight: 700;
-  font-size: 28px;
+  font-size: 25px;
   display: grid;
   place-items: center;
   margin: 0;
@@ -117,10 +139,10 @@
 
 /* description under bubble */
 .step p{
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 500;
   line-height: 1.35;
-  color: #2f2f2f;
+  color: #332F40;
 }
 
 .miniDots{
@@ -134,7 +156,7 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #000000;
+  background: #332F40;
   display: inline-block;
   opacity: 0.9;
 }

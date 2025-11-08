@@ -4,6 +4,7 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    background: #DFDBDC;
 }
 
 #categoryPageWrapper {
@@ -15,8 +16,10 @@
 
 
 #categoryTitle {
-    font-size: 2.3rem;
-    margin-bottom: 50px;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    margin-top: 60px;
+    letter-spacing: 4px;
     text-transform: uppercase;
     text-decoration: underline;
 }
@@ -26,66 +29,56 @@
     justify-content: center;
     flex-wrap: wrap;
     gap: 25px 52px;
+    margin-top: 30px;
 }
 
 #degreeSelector {
     display: flex;
-    background: #fff;
-    border-radius: 34px;
-    box-shadow: 0 2px 8px rgba(40,40,40,0.07);
-    padding: 8px 16px;
-    margin: 40px;
-    gap: 8px;
+    border-radius: 15px;
+    margin: 35px;
+    gap: 50px;
 }
 
 .degreeBtn {
     background: transparent;
-    border: none;
-    padding: 6px 25px;
-    border-radius: 22px;
+    border: 2px solid #c9c9c9;
+    padding: 15px 80px;
+    border-radius: 9999px;
+    font-size: 1.35rem;
+    font-weight: bold;
     cursor: pointer;
-    color: #1a1c2e;
+    color: #000000;
+    box-shadow: 0 0 6px #2b263f2f;
 }
 
 .degreeBtn:hover
-{
-    background-color: rgb(198, 198, 198);
-}
-
-
-#categoryPagination {
-    display: flex;
-    justify-content: center;
-    margin: 31px 0 0;
-}
-
-.paginationBtn {
-    width: 46px;
-    height: 38px;
-    background: #212126;
-    color: #fff;
-    border: none;
-    border-radius: 13px;
-    margin: 0 6px;
-    font-size: 2.0rem;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 3px 14px rgba(44,44,50,0.10);
-    transition: filter 0.13s;
-}
-
-.paginationBtn:hover {
-    filter: brightness(95%);
-}
-
-.skillCard.selected {
-    background-color: #b0e0ff;
-    border: 2px solid #0077ff;
+{    
+    background-color: transparent;
 }
 
 .degreeBtn.active {
-  background-color: #000;
-  color: #fff;
-  border-color: #000;
-  transform: scale(1.05);
+    background-color: #2B263F;
+    color: #fff;
+    border: none;
+}
+
+.category_button
+{
+    margin-top: 30px;
+    margin-bottom: 30px;
+    color: #000000;
+    background: #EBC66B;
+    border: none;
+    border-radius: 999px;
+    font-size: 1.35rem;
+    font-weight: bold;
+    padding: 15px 80px;
+    cursor: pointer;
+    align-self: center;
+    white-space: nowrap;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.category_button:hover{ 
+    background: #f1a33e;
 }

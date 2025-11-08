@@ -600,14 +600,14 @@ export default function Dashboard(){
                         {/* Only show if NOT visitor */}
                         {!forVisitor && viewMode == null && (
                             <div id='myBookmarks'>
-                                <button onClick={() => {fetchBookmarks(); toggleBookmarked(true)}}><FaBookBookmark /> Check Out My Bookmarks</button>
+                                <button onClick={() => {fetchBookmarks(); toggleBookmarked(true)}}><FaBookBookmark /> My Bookmarks</button>
                             </div>
                         )}                 
 
                         <div className='infoDisplay'>
                             <h3>Select a course to find out more!</h3>
                             <h3>---</h3>
-                            <h3>Click on <FcInfo size={40}/> to compare courses!</h3>
+                            <h3 className="cmpareicon">Click on <FcInfo size={40}/> to compare courses!</h3>
                         </div>
                     </div>
                 )}
@@ -707,7 +707,7 @@ export default function Dashboard(){
 
                             <div id="compareBtn">
                               <Link to={`/comparePage?courseIds=${selectedCourses.join(",")}&source=${source}`}>
-                                <button disabled={isDisabled}>COMPARE!</button>
+                                <button disabled={isDisabled}>Compare!</button>
                               </Link>
                             </div>
                         </div>
