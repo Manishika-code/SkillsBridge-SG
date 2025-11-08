@@ -41,6 +41,7 @@
 #topPanel h1
 {
     color: white;
+    letter-spacing: 4px;
 }
 
 #dashboardContainer
@@ -167,10 +168,14 @@
     text-align: center;
 }
 
+.infoDisplay h2
+{
+    letter-spacing: 4px;
+}
+
 .infoDisplay h3
 {
-    line-height: 2em;
-    font-size: 1.35em;
+    font-size: 1.2em;
 }
 
 #afterSelect
@@ -221,7 +226,8 @@
 .headerSide
 {
     font-size: 2em;
-    padding-top: 50px;
+    padding-top: 40px;
+    letter-spacing: 4px;
 }
 
 #afterSelect #gridContent
@@ -229,7 +235,7 @@
     display: grid;
     justify-items: center;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5em;
+    gap: 1em;
 }
 
 #afterSelect #roadMap
@@ -238,8 +244,9 @@
     justify-content: center;
     flex-direction: column;
     text-align: center;
-    margin-top: 20%;
-    position: relative;
+    bottom: 12%;
+    position: fixed;
+    width: 32%;
 }
 
 #roadMap h1

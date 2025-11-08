@@ -630,7 +630,7 @@ export default function Dashboard(){
 
                         </div>
                     
-                        <h1 className="headerSide">Latest Info</h1>                            
+                        <h1 className="headerSide">LATEST INFO</h1>                            
                         <div id="gridContent">
                           {igpInfo.length > 0 ? (
                             igpInfo.map((igp) => (
@@ -647,7 +647,7 @@ export default function Dashboard(){
                     </div>
 
                     <div id="roadMap">
-                        <h1 className="headerSide">Road Map</h1>  
+                        <h1 className="headerSide">ROAD MAP</h1>  
                         <p>Recommended path outline in the future</p>
 
                         <div id="mapContainer">
@@ -701,7 +701,7 @@ export default function Dashboard(){
                         <div id="compareGuide">
 
                             <div className='infoDisplay'>
-                                <h2>Compare Courses</h2>
+                                <h2>COMPARE COURSES</h2>
                                 <h3>Select 2 courses to compare side-by-side!</h3>
                             </div>   
 
